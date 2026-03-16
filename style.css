@@ -647,6 +647,116 @@ body {
 }
 
 /* ══════════════════════════════════════════════
+   YOUTUBE SECTION
+   ══════════════════════════════════════════════ */
+
+.yt-section {
+  padding: 6rem 0 7rem;
+  background: linear-gradient(180deg, var(--navy) 0%, var(--black) 100%);
+  color: var(--white);
+}
+
+.yt-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.yt-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: opacity 0.2s;
+}
+
+.yt-brand:hover {
+  opacity: 0.8;
+  color: var(--white);
+}
+
+.yt-title {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.yt-subtitle {
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  color: var(--gray-400);
+  line-height: 1.7;
+}
+
+/* Video Tabs */
+.yt-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.yt-tab {
+  padding: 0.55rem 1.4rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--gray-400);
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.yt-tab.active {
+  background: #FF0000;
+  color: var(--white);
+}
+
+.yt-tab:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+}
+
+/* Video Player — 16:9 responsive embed */
+.yt-player {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.yt-player iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+@media (max-width: 768px) {
+  .yt-section { padding: 4rem 0; }
+  .yt-tabs { flex-wrap: wrap; gap: 0.4rem; }
+  .yt-tab { padding: 0.45rem 1rem; font-size: 0.8rem; }
+  .yt-player { border-radius: 12px; }
+}
+
+@media (max-width: 480px) {
+  .yt-section { padding: 3rem 0; }
+  .yt-brand svg { width: 28px; height: 28px; }
+}
+
+/* ══════════════════════════════════════════════
    CTA SECTION
    ══════════════════════════════════════════════ */
 

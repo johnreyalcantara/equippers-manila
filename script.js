@@ -398,7 +398,7 @@
             '<div class="card-meta">Led by ' + item.leader_name + ' · ' + item.total_members + ' member' + (item.total_members !== 1 ? 's' : '') + meetingInfo + '</div>' +
             '<p class="card-desc">' + (item.description || 'No description.') + '</p>' +
             locationInfo +
-          '</div>';
+            '</div>';
         }).join('');
       })
       .catch(function () {
@@ -434,4 +434,46 @@
   } else {
     init();
   }
+})();
+
+/* ══════════════════════════════════════════════
+   YOUTUBE SECTION — Tab switching for video embeds
+
+   Replace the video IDs below with actual YouTube video IDs.
+   To get a video ID: go to the video on YouTube,
+   the ID is the part after "v=" in the URL.
+   Example: https://youtube.com/watch?v=dQw4w9WgXcQ → ID is "dQw4w9WgXcQ"
+   ══════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  // ── Replace these with your actual YouTube video IDs ──
+  var videoIds = [
+    '2bPwQ3Vys4w',  // Tab 1: Latest
+    'bD0su29BWA8',  // Tab 2: Week 2
+    '2GgEmasiCLc',  // Tab 3: Week 3
+    'pIzW9Gk4qCU'   // Tab 4: Week 4
+  ];
+
+  var player = document.getElementById('ytPlayer');
+  var tabs = document.querySelectorAll('.yt-tab');
+  if (!player || tabs.length === 0) return;
+
+  function setVideo(index) {
+    player.src = 'https://www.youtube.com/embed/' + videoIds[index] + '?rel=0';
+  }
+
+  // Set initial video
+  setVideo(0);
+
+  // Tab click handlers
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var index = parseInt(tab.getAttribute('data-index'));
+      setVideo(index);
+    });
+  });
 })();
