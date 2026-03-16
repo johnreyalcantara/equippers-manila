@@ -67,19 +67,21 @@
       background: var(--navy);
       color: var(--white);
     }
+
+    .btn-disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
   </style>
 </head>
 
 <body>
   <nav class="app-nav">
-    <a href="/" class="app-nav-brand"><img src="/header.png" alt="" />
-      <div class="app-nav-links">
-        <a href="/pages/announcements.html">Announcements</a>
-        <a href="/pages/community.html" class="active">Community</a>
-        <a href="/pages/chat.html">Chat</a>
-        <a href="/pages/dashboard.html">Dashboard</a>
-        <a class="nav-logout" id="authLink"></a>
-      </div>
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt="">
+    <div class="app-nav-links" id="navLinks">
+      <!-- Filled by JS based on login state -->
+    </div>
   </nav>
   <div class="page">
     <div class="page-header">
@@ -99,10 +101,27 @@
 
   <script src="/js/api.js"></script>
   <script>
-    const link = document.getElementById('authLink');
+    // Build nav based on login state
     const isLoggedIn = !!API.getToken();
-    if (isLoggedIn) { link.textContent = 'Logout'; link.onclick = () => API.logout(); link.className = 'nav-logout'; }
-    else { link.textContent = 'Login'; link.href = '/pages/login.html'; }
+    const currentUser = API.getUser();
+    const navEl = document.getElementById('navLinks');
+
+    if (isLoggedIn) {
+      const isLeader = currentUser && (currentUser.role === 'LEADER' || currentUser.role === 'ADMIN');
+      navEl.innerHTML =
+        '<a href="/pages/dashboard.html">Dashboard</a>' +
+        '<a href="/pages/announcements.html">Announcements</a>' +
+        '<a href="/pages/community.html" class="active">Community</a>' +
+        '<a href="/pages/chat.html">Chat</a>' +
+        '<a href="/pages/donations.html">Donations</a>' +
+        (isLeader ? '<a href="/pages/my-groups.html">My Groups</a>' : '') +
+        '<a href="/pages/settings.html">Settings</a>' +
+        '<a class="nav-logout" onclick="API.logout()">Logout</a>';
+    } else {
+      navEl.innerHTML =
+        '<a href="/pages/community.html" class="active">Community</a>' +
+        '<a href="/pages/login.html" class="btn btn-nav">LOGIN</a>';
+    }
 
     let currentTab = 'teams';
 
@@ -128,6 +147,7 @@
         const bodyKey = { teams: 'team_id', hubs: 'hub_id', groups: 'group_id' };
         await API.post(endpoints[type], { [bodyKey[type]]: id });
         showAlert('Join request submitted!', 'success');
+        loadData();
       } catch (e) { showAlert(e.message, 'error'); }
     }
 
@@ -138,16 +158,31 @@
         const rows = await fetch(endpoints[currentTab]).then(r => r.json());
         if (rows.length === 0) { el.innerHTML = '<p style="color:var(--gray-400)">None created yet.</p>'; return; }
 
-        el.innerHTML = rows.map(item => `
+        const userId = currentUser ? currentUser.id : null;
+
+        el.innerHTML = rows.map(item => {
+          const isLeaderOfThis = userId && item.leader_user_id === userId;
+
+          let actionBtn = '';
+          if (isLeaderOfThis) {
+            actionBtn = '<span class="badge badge-info" style="font-size:0.8rem;">You lead this</span>';
+          } else if (isLoggedIn) {
+            actionBtn = '<button class="btn btn-primary btn-sm" onclick="applyJoin(\'' + currentTab + '\',' + item.id + ')">Apply to Join</button>';
+          } else {
+            actionBtn = '<a href="/pages/login.html" class="btn btn-outline btn-sm">Login to Join</a>';
+          }
+
+          return `
           <div class="community-card">
             <h3>${item.name}</h3>
             <div class="meta">Led by ${item.leader_name} · ${item.total_members} member${item.total_members !== 1 ? 's' : ''}
               ${item.meeting_day ? ' · ' + item.meeting_day : ''}</div>
             <p>${item.description || 'No description.'}</p>
             ${item.meeting_location ? '<p style="font-size:0.8rem;color:var(--gray-400);">📍 ' + item.meeting_location + '</p>' : ''}
-            ${isLoggedIn ? '<button class="btn btn-primary btn-sm" onclick="applyJoin(\'' + currentTab + '\',' + item.id + ')">Apply to Join</button>' : '<a href="/pages/login.html" class="btn btn-outline btn-sm">Login to Join</a>'}
+            ${actionBtn}
           </div>
-        `).join('');
+        `;
+        }).join('');
       } catch (e) { console.error(e); el.innerHTML = '<p style="color:var(--danger)">Failed to load.</p>'; }
     }
 

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Groups — Equippers Manila</title>
+  <link rel="icon" type="image/x-icon" href="/ico.png">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .section-divider { border:none; border-top:1px solid var(--gray-200); margin:2.5rem 0; }
+    .type-label { font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--orange); margin-bottom:0.75rem; }
+  </style>
+</head>
+<body>
+  <nav class="app-nav">
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt="">
+    <div class="app-nav-links">
+      <a href="/pages/dashboard.html">Dashboard</a>
+      <a href="/pages/announcements.html">Announcements</a>
+      <a href="/pages/community.html">Community</a>
+      <a href="/pages/chat.html">Chat</a>
+      <a href="/pages/donations.html">Donations</a>
+      <a href="/pages/my-groups.html" id="leaderLink" class="active">My Groups</a>
+      <a href="/pages/settings.html">Settings</a>
+      <a class="nav-logout" onclick="API.logout()">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>My Leadership</h1>
+      <p>Manage your Equip Teams, E-Hubs, and E-Groups — review and approve join requests</p>
+    </div>
+
+    <div id="pageAlert"></div>
+
+    <!-- ═══ Create E-Group (leaders can create these) ═══ -->
+    <div class="card">
+      <div class="card-title">Create New E-Group</div>
+      <form id="createGroupForm">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label>Group Name</label>
+            <input type="text" name="name" placeholder="e.g. Young Adults" required>
+          </div>
+          <div class="form-group">
+            <label>Meeting Day</label>
+            <select name="meeting_day">
+              <option value="">Select a day</option>
+              <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+              <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Meeting Location</label>
+            <input type="text" name="meeting_location" placeholder="e.g. Starbucks BGC">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <input type="text" name="description" placeholder="Short description">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">Create E-Group</button>
+      </form>
+    </div>
+
+    <!-- ═══ My Equip Teams ═══ -->
+    <div class="card">
+      <div class="type-label">Equip Teams I Lead</div>
+      <div id="myTeamsList">Loading...</div>
+      <hr class="section-divider">
+      <div class="type-label">Equip Team Join Requests</div>
+      <div id="teamRequestsList">Loading...</div>
+    </div>
+
+    <!-- ═══ My E-Hubs ═══ -->
+    <div class="card">
+      <div class="type-label">E-Hubs I Lead</div>
+      <div id="myHubsList">Loading...</div>
+      <hr class="section-divider">
+      <div class="type-label">E-Hub Join Requests</div>
+      <div id="hubRequestsList">Loading...</div>
+    </div>
+
+    <!-- ═══ My E-Groups ═══ -->
+    <div class="card">
+      <div class="type-label">E-Groups I Lead</div>
+      <div id="myGroupsList">Loading...</div>
+      <hr class="section-divider">
+      <div class="type-label">E-Group Join Requests</div>
+      <div id="groupRequestsList">Loading...</div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    (function() {
+      if (!API.requireAuth()) return;
+      var user = API.getUser();
+      if (user.role !== 'LEADER' && user.role !== 'ADMIN') {
+        window.location.href = '/pages/dashboard.html';
+        return;
+      }
+
+      function showAlert(msg, type) {
+        var el = document.getElementById('pageAlert');
+        el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
+        setTimeout(function() { el.innerHTML = ''; }, 4000);
+      }
+
+      function emptyMsg(text) {
+        return '<p style="color:var(--gray-400);font-size:0.9rem;">' + text + '</p>';
+      }
+
+      function buildTable(headers, rows) {
+        return '<table class="data-table"><thead><tr>' +
+          headers.map(function(h) { return '<th>' + h + '</th>'; }).join('') +
+          '</tr></thead><tbody>' + rows.join('') + '</tbody></table>';
+      }
+
+      // ───────── Create E-Group ─────────
+      document.getElementById('createGroupForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+          var res = await API.post('/e-groups', Object.fromEntries(new FormData(e.target)));
+          showAlert(res.message, 'success');
+          e.target.reset();
+          loadGroups();
+        } catch(err) { showAlert(err.message, 'error'); }
+      });
+
+      // ───────── EQUIP TEAMS ─────────
+      async function loadTeams() {
+        try {
+          var all = await fetch('/api/equip-teams').then(function(r) { return r.json(); });
+          var mine = all.filter(function(t) { return t.leader_user_id === user.id; });
+
+          var listEl = document.getElementById('myTeamsList');
+          if (mine.length === 0) {
+            listEl.innerHTML = emptyMsg('You don\'t lead any Equip Teams.');
+          } else {
+            listEl.innerHTML = buildTable(['Name', 'Description', 'Members'],
+              mine.map(function(t) {
+                return '<tr><td><strong>' + t.name + '</strong></td><td>' + (t.description || '—') + '</td><td>' + t.total_members + '</td></tr>';
+              })
+            );
+          }
+
+          // Load requests
+          var reqEl = document.getElementById('teamRequestsList');
+          var allReqs = [];
+          for (var t of mine) {
+            var reqs = await API.get('/equip-teams/' + t.id + '/requests');
+            reqs.forEach(function(r) { r._name = t.name; r._type = 'team'; });
+            allReqs = allReqs.concat(reqs);
+          }
+          if (allReqs.length === 0) {
+            reqEl.innerHTML = emptyMsg('No pending requests.');
+          } else {
+            reqEl.innerHTML = buildTable(['Applicant', 'Username', 'Team', 'Date', 'Actions'],
+              allReqs.map(function(r) {
+                return '<tr><td>' + r.name + '</td><td>@' + r.username + '</td><td>' + r._name + '</td><td>' + new Date(r.requested_at).toLocaleDateString() + '</td>' +
+                  '<td style="display:flex;gap:0.5rem;"><button class="btn btn-primary btn-sm" onclick="handleRequest(\'team\',' + r.id + ',\'approve\')">Approve</button><button class="btn btn-danger btn-sm" onclick="handleRequest(\'team\',' + r.id + ',\'reject\')">Reject</button></td></tr>';
+              })
+            );
+          }
+        } catch(e) { console.error(e); }
+      }
+
+      // ───────── E-HUBS ─────────
+      async function loadHubs() {
+        try {
+          var all = await fetch('/api/e-hubs').then(function(r) { return r.json(); });
+          var mine = all.filter(function(h) { return h.leader_user_id === user.id; });
+
+          var listEl = document.getElementById('myHubsList');
+          if (mine.length === 0) {
+            listEl.innerHTML = emptyMsg('You don\'t lead any E-Hubs.');
+          } else {
+            listEl.innerHTML = buildTable(['Name', 'Description', 'Members'],
+              mine.map(function(h) {
+                return '<tr><td><strong>' + h.name + '</strong></td><td>' + (h.description || '—') + '</td><td>' + h.total_members + '</td></tr>';
+              })
+            );
+          }
+
+          var reqEl = document.getElementById('hubRequestsList');
+          var allReqs = [];
+          for (var h of mine) {
+            var reqs = await API.get('/e-hubs/' + h.id + '/requests');
+            reqs.forEach(function(r) { r._name = h.name; r._type = 'hub'; });
+            allReqs = allReqs.concat(reqs);
+          }
+          if (allReqs.length === 0) {
+            reqEl.innerHTML = emptyMsg('No pending requests.');
+          } else {
+            reqEl.innerHTML = buildTable(['Applicant', 'Username', 'E-Hub', 'Date', 'Actions'],
+              allReqs.map(function(r) {
+                return '<tr><td>' + r.name + '</td><td>@' + r.username + '</td><td>' + r._name + '</td><td>' + new Date(r.requested_at).toLocaleDateString() + '</td>' +
+                  '<td style="display:flex;gap:0.5rem;"><button class="btn btn-primary btn-sm" onclick="handleRequest(\'hub\',' + r.id + ',\'approve\')">Approve</button><button class="btn btn-danger btn-sm" onclick="handleRequest(\'hub\',' + r.id + ',\'reject\')">Reject</button></td></tr>';
+              })
+            );
+          }
+        } catch(e) { console.error(e); }
+      }
+
+      // ───────── E-GROUPS ─────────
+      async function loadGroups() {
+        try {
+          var all = await fetch('/api/e-groups').then(function(r) { return r.json(); });
+          var mine = all.filter(function(g) { return g.leader_user_id === user.id; });
+
+          var listEl = document.getElementById('myGroupsList');
+          if (mine.length === 0) {
+            listEl.innerHTML = emptyMsg('You haven\'t created any E-Groups yet.');
+          } else {
+            listEl.innerHTML = buildTable(['Name', 'Day', 'Location', 'Members'],
+              mine.map(function(g) {
+                return '<tr><td><strong>' + g.name + '</strong></td><td>' + (g.meeting_day || '—') + '</td><td>' + (g.meeting_location || '—') + '</td><td>' + g.total_members + '</td></tr>';
+              })
+            );
+          }
+
+          var reqEl = document.getElementById('groupRequestsList');
+          var allReqs = [];
+          for (var g of mine) {
+            var reqs = await API.get('/e-groups/' + g.id + '/requests');
+            reqs.forEach(function(r) { r._name = g.name; r._type = 'group'; });
+            allReqs = allReqs.concat(reqs);
+          }
+          if (allReqs.length === 0) {
+            reqEl.innerHTML = emptyMsg('No pending requests.');
+          } else {
+            reqEl.innerHTML = buildTable(['Applicant', 'Username', 'E-Group', 'Date', 'Actions'],
+              allReqs.map(function(r) {
+                return '<tr><td>' + r.name + '</td><td>@' + r.username + '</td><td>' + r._name + '</td><td>' + new Date(r.requested_at).toLocaleDateString() + '</td>' +
+                  '<td style="display:flex;gap:0.5rem;"><button class="btn btn-primary btn-sm" onclick="handleRequest(\'group\',' + r.id + ',\'approve\')">Approve</button><button class="btn btn-danger btn-sm" onclick="handleRequest(\'group\',' + r.id + ',\'reject\')">Reject</button></td></tr>';
+              })
+            );
+          }
+        } catch(e) { console.error(e); }
+      }
+
+      // ───────── Approve / Reject handler for all types ─────────
+      window.handleRequest = async function(type, requestId, action) {
+        var endpoints = {
+          team: '/equip-teams/requests/' + requestId + '/' + action,
+          hub: '/e-hubs/requests/' + requestId + '/' + action,
+          group: '/e-groups/requests/' + requestId + '/' + action
+        };
+        try {
+          var res = await API.post(endpoints[type]);
+          showAlert(res.message, 'success');
+          // Reload the relevant section
+          if (type === 'team') loadTeams();
+          else if (type === 'hub') loadHubs();
+          else loadGroups();
+        } catch(e) { showAlert(e.message, 'error'); }
+      };
+
+      // Load all three
+      loadTeams();
+      loadHubs();
+      loadGroups();
+    })();
+  </script>
+</body>
+</html>

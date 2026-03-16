@@ -84,5 +84,17 @@ const API = {
       return false;
     }
     return true;
+  },
+
+  // Show leader-only nav links if user is LEADER or ADMIN
+  initLeaderNav() {
+    const user = this.getUser();
+    if (user && (user.role === 'LEADER' || user.role === 'ADMIN')) {
+      const link = document.getElementById('leaderLink');
+      if (link) link.style.display = '';
+    }
   }
 };
+
+// Auto-init leader nav on every page that includes api.js
+document.addEventListener('DOMContentLoaded', function() { API.initLeaderNav(); });

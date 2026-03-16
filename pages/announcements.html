@@ -12,13 +12,7 @@
 <body>
   <nav class="app-nav">
     <a href="/" class="app-nav-brand"><img src="/header.png" alt="" />
-      <div class="app-nav-links">
-        <a href="/pages/announcements.html" class="active">Announcements</a>
-        <a href="/pages/community.html">Community</a>
-        <a href="/pages/chat.html">Chat</a>
-        <a href="/pages/dashboard.html">Dashboard</a>
-        <a class="nav-logout" id="authLink"></a>
-      </div>
+      <div class="app-nav-links" id="navLinks"></div>
   </nav>
   <div class="page">
     <div class="page-header">
@@ -29,10 +23,27 @@
   </div>
   <script src="/js/api.js"></script>
   <script>
-    // Setup auth link
-    const link = document.getElementById('authLink');
-    if (API.getToken()) { link.textContent = 'Logout'; link.onclick = () => API.logout(); link.className = 'nav-logout'; }
-    else { link.textContent = 'Login'; link.href = '/pages/login.html'; }
+    // Build nav based on login state
+    const isLoggedIn = !!API.getToken();
+    const currentUser = API.getUser();
+    const navEl = document.getElementById('navLinks');
+    if (isLoggedIn) {
+      const isLeader = currentUser && (currentUser.role === 'LEADER' || currentUser.role === 'ADMIN');
+      navEl.innerHTML =
+        '<a href="/pages/dashboard.html">Dashboard</a>' +
+        '<a href="/pages/announcements.html" class="active">Announcements</a>' +
+        '<a href="/pages/community.html">Community</a>' +
+        '<a href="/pages/chat.html">Chat</a>' +
+        '<a href="/pages/donations.html">Donations</a>' +
+        (isLeader ? '<a href="/pages/my-groups.html">My Groups</a>' : '') +
+        '<a href="/pages/settings.html">Settings</a>' +
+        '<a class="nav-logout" onclick="API.logout()">Logout</a>';
+    } else {
+      navEl.innerHTML =
+        '<a href="/pages/announcements.html" class="active">Announcements</a>' +
+        '<a href="/pages/community.html">Community</a>' +
+        '<a href="/pages/login.html" class="btn btn-nav">LOGIN</a>';
+    }
 
     (async function () {
       try {
