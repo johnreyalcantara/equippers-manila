@@ -29,7 +29,9 @@
       const streak = await API.get('/attendance/streak');
       const reservations = await API.get('/reservations/mine');
 
-      const attendingIds = new Set(streak.upcoming.map(a => a.service_id));
+      // Build lookup maps from upcoming attendance (includes type field)
+      const attendingMap = {};
+      streak.upcoming.forEach(a => { attendingMap[a.service_id] = a.type || 'REGULAR'; });
       const reservedIds = new Set(reservations.map(r => r.service_id));
       const container = document.getElementById('servicesList');
 
@@ -40,19 +42,26 @@
 
       container.innerHTML = services.map(s => {
         const date = new Date(s.service_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        const isAttending = attendingIds.has(s.id);
+        const isAttending = s.id in attendingMap;
+        const isVIP = attendingMap[s.id] === 'VIP';
         const isReserved = reservedIds.has(s.id);
 
         return `
           <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 0; border-bottom:1px solid var(--gray-200);">
             <div>
-              <strong>${s.title}</strong><br>
+              <strong>${s.title}</strong>
+              ${isVIP ? '<span class="badge badge-warning" style="margin-left:0.5rem;">VIP</span>' : ''}
+              <br>
               <span style="font-size:0.85rem; color:var(--gray-600)">${date} — ${s.service_time}</span>
             </div>
-            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
               ${isReserved
                 ? `<button class="btn btn-outline btn-sm" onclick="cancelReservation(${s.id})">Cancel Seat</button>`
                 : `<button class="btn btn-secondary btn-sm" onclick="reserveSeat(${s.id})">Reserve Seat</button>`
+              }
+              ${isVIP
+                ? `<button class="btn btn-sm" style="background:var(--gold);color:#fff;cursor:default;">VIP ✓</button>`
+                : `<button class="btn btn-sm" style="background:var(--gold);color:#fff;" onclick="markVIP(${s.id})">VIP</button>`
               }
               ${isAttending
                 ? `<button class="btn btn-danger btn-sm" onclick="cancelAttendance(${s.id})">Cancel</button>
@@ -76,6 +85,10 @@
   };
   window.markAttending = async function (id) {
     try { await API.post('/attendance', { service_id: id }); loadServices(); loadStreak(); }
+    catch (e) { alert(e.message); }
+  };
+  window.markVIP = async function (id) {
+    try { await API.post('/attendance/vip', { service_id: id }); loadServices(); loadStreak(); }
     catch (e) { alert(e.message); }
   };
   window.cancelAttendance = async function (id) {

@@ -4,19 +4,36 @@ const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// POST /api/attendance — mark as attending
+// POST /api/attendance — mark as attending (regular)
 router.post('/', verifyToken, async (req, res) => {
   try {
     const { service_id } = req.body;
     if (!service_id) return res.status(400).json({ error: 'Service ID required.' });
 
     await pool.execute(
-      'INSERT INTO attendance (user_id, service_id, status) VALUES (?, ?, "ATTENDING") ON DUPLICATE KEY UPDATE status = "ATTENDING", marked_at = CURRENT_TIMESTAMP',
+      'INSERT INTO attendance (user_id, service_id, status, type) VALUES (?, ?, "ATTENDING", "REGULAR") ON DUPLICATE KEY UPDATE status = "ATTENDING", type = "REGULAR", marked_at = CURRENT_TIMESTAMP',
       [req.user.id, service_id]
     );
     res.json({ message: 'Marked as attending.' });
   } catch (err) {
     console.error('Attendance error:', err);
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// POST /api/attendance/vip — mark as VIP for a service
+router.post('/vip', verifyToken, async (req, res) => {
+  try {
+    const { service_id } = req.body;
+    if (!service_id) return res.status(400).json({ error: 'Service ID required.' });
+
+    await pool.execute(
+      'INSERT INTO attendance (user_id, service_id, status, type) VALUES (?, ?, "ATTENDING", "VIP") ON DUPLICATE KEY UPDATE status = "ATTENDING", type = "VIP", marked_at = CURRENT_TIMESTAMP',
+      [req.user.id, service_id]
+    );
+    res.json({ message: 'Marked as VIP.' });
+  } catch (err) {
+    console.error('VIP error:', err);
     res.status(500).json({ error: 'Server error.' });
   }
 });
@@ -57,7 +74,6 @@ router.get('/streak', verifyToken, async (req, res) => {
     // Calculate streak: count consecutive weeks from current week backwards
     let streak = 0;
     if (weeks.length > 0) {
-      // Get current year-week
       const [nowRow] = await pool.execute('SELECT YEARWEEK(CURDATE(), 1) as currentWeek');
       let expectedWeek = parseInt(nowRow[0].currentWeek);
 
@@ -66,7 +82,6 @@ router.get('/streak', verifyToken, async (req, res) => {
         if (yw === expectedWeek || yw === expectedWeek - 1) {
           streak++;
           expectedWeek = yw - 1;
-          // Handle year boundary (week 01 of new year)
           const weekNum = expectedWeek % 100;
           if (weekNum < 1) {
             expectedWeek = (Math.floor(expectedWeek / 100) - 1) * 100 + 52;
@@ -77,7 +92,7 @@ router.get('/streak', verifyToken, async (req, res) => {
       }
     }
 
-    // Get user's attendance for upcoming services
+    // Get user's attendance for upcoming services (includes type)
     const [myAttendance] = await pool.execute(
       `SELECT a.*, s.service_date, s.service_time
        FROM attendance a JOIN services s ON a.service_id = s.id

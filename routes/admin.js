@@ -200,6 +200,7 @@ router.get('/services-list', async (req, res) => {
     const [rows] = await pool.execute(
       `SELECT s.*,
         (SELECT COUNT(*) FROM attendance a WHERE a.service_id = s.id AND a.status = 'ATTENDING') as attendee_count,
+        (SELECT COUNT(*) FROM attendance a WHERE a.service_id = s.id AND a.status = 'ATTENDING' AND a.type = 'VIP') as vip_count,
         (SELECT COUNT(*) FROM reservations r WHERE r.service_id = s.id AND r.status = 'RESERVED') as reservation_count
        FROM services s ORDER BY s.service_date DESC, s.service_time DESC`
     );

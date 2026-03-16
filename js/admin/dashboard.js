@@ -24,7 +24,7 @@
       }
 
       let html = '<table class="data-table"><thead><tr>';
-      html += '<th>ID</th><th>Title</th><th>Date</th><th>Time</th><th>Max Seats</th><th>Attendees</th><th>Reservations</th>';
+      html += '<th>ID</th><th>Title</th><th>Date</th><th>Time</th><th>Max Seats</th><th>Attendees</th><th>VIP</th><th>Reservations</th>';
       html += '</tr></thead><tbody>';
 
       rows.forEach(s => {
@@ -36,6 +36,7 @@
           <td>${s.service_time}</td>
           <td>${s.max_seats}</td>
           <td>${s.attendee_count}</td>
+          <td><span class="badge badge-warning">${s.vip_count}</span></td>
           <td>${s.reservation_count}</td>
         </tr>`;
       });
