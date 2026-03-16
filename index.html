@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equippers Manila</title>
+  <link rel="icon" type="image/x-icon" href="ico.png">
+  <!-- Cache / preload the logo image -->
+  <link rel="preload" as="image" href="logo.png">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       SPLASH SCREEN
+       Structure: splash-screen > logo-container > svg-mask + wave-animation
+       ═══════════════════════════════════════════ -->
+  <div id="splash" class="splash-screen">
+    <div class="logo-container">
+
+      <svg id="splashSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!--
+            SVG Mask: uses logo.png as a luminance mask.
+            White pixels = visible, transparent = hidden.
+            All animated content inside this mask only appears within the logo shape.
+          -->
+          <mask id="logoMask">
+            <image href="logo.png" x="10" y="10" width="180" height="180" preserveAspectRatio="xMidYMid meet" />
+          </mask>
+
+          <!--
+            Outline Filter: creates a thick white outline of the logo shape.
+            1. feMorphology dilates (expands) the alpha channel
+            2. feComposite subtracts original alpha, leaving only the border
+            3. feFlood + feComposite colors the border white
+          -->
+          <filter id="outlineFilter" x="-10%" y="-10%" width="120%" height="120%">
+            <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="expanded" />
+            <feComposite in="expanded" in2="SourceAlpha" operator="out" result="border" />
+            <feFlood flood-color="white" flood-opacity="1" result="color" />
+            <feComposite in="color" in2="border" operator="in" />
+          </filter>
+        </defs>
+
+        <!--
+          OUTLINE LAYER — visible instantly on page load.
+          Shows only the thick white border of the logo, interior is transparent.
+        -->
+        <image id="logoOutline" href="logo.png" x="10" y="10" width="180" height="180"
+          preserveAspectRatio="xMidYMid meet" filter="url(#outlineFilter)" />
+
+        <!--
+          WAVE ANIMATION LAYER — liquid fill masked by logo shape.
+          The SVG path is updated every frame by JavaScript.
+          Water only appears inside the logo thanks to the SVG mask.
+        -->
+        <g mask="url(#logoMask)">
+          <path id="waterPath" fill="white" d="" />
+        </g>
+      </svg>
+
+    </div>
+
+    <!--
+      Glow Expansion Layer:
+      A radial circle centered on the logo that scales outward,
+      creating a continuous glow → expanding light → white flash effect.
+      Starts invisible and small; JS animates opacity + scale.
+    -->
+    <div id="glowExpansion" class="glow-expansion"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       LANDING PAGE (main-content)
+       ═══════════════════════════════════════════ -->
+  <div id="landing" class="main-content">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="nav-brand">
+          <img src="logo.png" alt="Equippers Manila" class="nav-logo">
+        </a>
+        <div class="nav-links">
+          <a href="#">About</a>
+          <a href="#">Services</a>
+          <a href="#">Connect</a>
+          <a href="#" class="btn btn-nav">Visit Us</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <p class="hero-label">Welcome to</p>
+        <h1 class="hero-title">Equippers <span>Manila</span></h1>
+        <p class="hero-subtitle">Building a community of faith, purpose, and connection in the heart of Manila.</p>
+        <div class="hero-buttons">
+          <a href="#" class="btn btn-primary">Get Started</a>
+          <a href="#" class="btn btn-outline">Learn More</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+      <div class="container">
+        <p class="section-label">What We Offer</p>
+        <h2 class="section-title">Everything you need</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon icon-navy">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+            </div>
+            <h3>Sunday Services</h3>
+            <p>Join us every Sunday for an uplifting experience of worship, teaching, and community.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon icon-orange">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <h3>Life Groups</h3>
+            <p>Connect with others in small group settings designed for deeper relationships and growth.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon icon-navy">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <h3>Serve Teams</h3>
+            <p>Discover your gifts and make an impact by serving alongside a passionate team.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta">
+      <div class="container">
+        <h2>Ready to join us?</h2>
+        <p>Be part of something bigger. We'd love to see you this Sunday.</p>
+        <a href="#" class="btn btn-primary">Visit This Sunday</a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; 2026 Equippers Manila. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
