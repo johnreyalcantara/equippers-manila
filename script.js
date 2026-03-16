@@ -291,3 +291,57 @@
   }
 
 })();
+
+/* ══════════════════════════════════════════════
+   CONNECT HUB — Scroll-triggered Animations
+
+   Uses IntersectionObserver to detect when the
+   Connect Hub section enters the viewport.
+   - Header fades in first
+   - Cards fade + slide up with stagger delays
+   ══════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  function initHubAnimations() {
+    var hubSection = document.getElementById('connectHub');
+    if (!hubSection) return;
+
+    var header = hubSection.querySelector('.hub-header');
+    var cards = hubSection.querySelectorAll('.hub-card');
+
+    // Observe the section entering the viewport
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+
+        // Fade in the header first
+        if (header) {
+          header.classList.add('visible');
+        }
+
+        // Stagger-reveal each card with increasing delay
+        cards.forEach(function (card, index) {
+          var delay = 150 + index * 100; // 150ms base + 100ms per card
+          card.style.transitionDelay = delay + 'ms';
+          card.classList.add('visible');
+        });
+
+        // Stop observing after reveal
+        observer.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.15  // Trigger when 15% of the section is visible
+    });
+
+    observer.observe(hubSection);
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHubAnimations);
+  } else {
+    initHubAnimations();
+  }
+})();

@@ -1,239 +1,239 @@
-You are a senior front-end animation engineer.
+I want to create a PREMIUM modern landing section for the Equippers Manila website.
 
-Your task is to build a HIGH-END animated splash screen for a website using a provided logo image.
+This section will appear BEFORE the main page content and act as a “Quick Access Hub” for visitors.
 
-The goal is to create a smooth, premium loading animation similar to Apple's product intros.
+The design should feel like a modern church website similar to Hillsong or Elevation Church.
 
-The logo file is:
+Focus on a HIGH-END, visually polished UI with smooth animations.
 
-logo.png
+--------------------------------
 
-The logo is:
-- white
-- transparent background
-- PNG format
-- very high resolution (10k x 10k)
-- should cache it 
+DESIGN STYLE
 
-The animation must use the logo as a MASK so animation only appears inside the logo shape.
+The visual style should be:
 
-Do NOT fake the fill using rectangles. 
-You MUST use SVG masking or clipPath.
+• modern
+• minimal
+• elegant
+• welcoming
+• inspirational
+• high-end
 
--------------------------------------
+Think of a church website that feels spiritual but modern and tech-forward.
 
-PROJECT STRUCTURE
+Use lots of whitespace and smooth UI elements.
 
-Return clean code using this structure:
+Avoid clutter.
 
-index.html
-style.css
-script.js
+--------------------------------
 
-Do NOT inline everything unless necessary.
+COLOR STYLE
 
--------------------------------------
+Use a modern church palette:
 
-SPLASH SCREEN DESIGN
+Primary colors
+• white
+• soft black / charcoal
 
-Create a FULLSCREEN splash screen.
+Accent colors
+• warm gold
+• soft beige
+• deep navy
 
-Properties:
+Optional:
+subtle gradient accents.
 
-Background: pure black (#000)
-Logo centered vertically and horizontally
-Logo size: between 160px – 220px width
-Everything should feel modern and minimal.
+--------------------------------
 
-Layout structure:
+SECTION HEADER
 
-body
-  splash-screen
-    logo-container
-      svg-mask
-      wave-animation
-  main-content (landing page)
+Title:
+Connect With Equippers Manila
 
--------------------------------------
+Subtitle:
+Explore resources, worship, and ways to get involved in our community.
 
-ANIMATION TIMELINE
-The logo outline should be visible instantly when the page loads. It should be white and thick.
-The animation sequence must follow this EXACT timeline.
+Center aligned.
 
-During this step:
-Logo interior remains transparent.
+Add subtle fade-in animation when the section enters the viewport.
 
--------------------------------------
+--------------------------------
 
-STEP 1 — Liquid Fill Animation
+LAYOUT
 
-After 2 seconds upon page loads:
+Create a responsive grid of modern interactive cards.
 
-Begin a liquid fill animation INSIDE the logo.
+Desktop:
+3 columns
 
-Requirements:
+Tablet:
+2 columns
 
-The liquid must:
-- start at bottom of logo
-- rise upward gradually
-- include animated waves
-- look organic
-- feel fluid and natural
+Mobile:
+1 column
 
-Implementation rules:
+Cards should have:
 
-Use an SVG wave path.
+• rounded corners
+• soft shadows
+• glass / soft background effect
+• modern icons
+• subtle hover animations
 
-Animate wave horizontally using:
-translateX or path animation.
+Spacing should feel luxurious and breathable.
 
-The water level must rise smoothly.
+--------------------------------
 
-Duration:
-4 seconds.
+CARD DESIGN
 
-The wave must:
-- move horizontally
-- gently oscillate
-- feel like real water.
+Each card should contain:
 
-IMPORTANT:
+• icon
+• title
+• short description
+• click action
 
-The liquid MUST be clipped by the logo mask.
+Cards should have a subtle gradient or glass effect background.
 
-Meaning:
-The water should only appear INSIDE the logo.
+Example card hover animation:
 
-Use:
-SVG mask or clipPath referencing logo shape.
+• slight scale up (1.04)
+• shadow becomes deeper
+• icon slightly animates upward
+• smooth easing animation
 
--------------------------------------
+Animation speed:
+~250ms
 
-STEP 2 — Glow Effect
+--------------------------------
 
-Once the logo becomes fully filled:
+MICRO INTERACTIONS
 
-Add a subtle glow.
+Add subtle animations such as:
 
-Implementation:
+• cards fade + slide upward when page loads
+• hover lift effect
+• icon bounce or float on hover
+• gentle glow accent
 
-CSS glow using:
+Animations must feel smooth and modern (Apple-like motion).
 
-filter: drop-shadow
+--------------------------------
 
-Glow should:
-- pulse once or twice
-- be soft
-- feel premium.
-- just one glow animation
+BUTTON LINKS
 
-Duration:
-~1 second.
+Create cards for these resources:
 
--------------------------------------
+1️⃣ EXPERIENCE
+Title: 30 Day Devotional Plan
+Description: Start a 30-day journey of faith and spiritual growth.
 
-STEP 3 — Transition
+Link:
+https://drive.google.com/drive/folders/1cZiyZjngTXqNw5-hJ1XYPeyfuvUhzH79
 
-After the glow animation:
+Icon suggestion:
+book / bible
 
-Fade out the splash screen smoothly like everything turns white.
+--------------------------------
 
-Simultaneously fade in the landing page.
+2️⃣ GET INVOLVED
+Title: Join Equip Teams
+Description: Be part of a team and serve in our church community.
 
-Transition duration:
-~800ms.
+Link:
+https://docs.google.com/forms/d/1OCXzr4K8m8Zkz-fZoWlB5__lFJ5B4MavV-mt1GOCcxw/viewform?edit_requested=true
 
--------------------------------------
+Icon suggestion:
+users / community
 
-LANDING PAGE
+--------------------------------
 
-After splash screen completes, reveal a simple landing page.
+3️⃣ FACEBOOK
+Title: Facebook
+Description: Stay updated with church news and events.
 
-Design style:
+Link:
+https://www.facebook.com/equippersmanila
 
-Minimal
-Modern
-Clean
-Professional
+--------------------------------
 
-Color palette:
+4️⃣ INSTAGRAM
+Title: Instagram
+Description: Follow us for moments, stories, and encouragement.
 
-Primary:
-black
-white
+Link:
+https://www.instagram.com/equippersmanila
 
-Accent:
-navy blue
-orange
+--------------------------------
 
-Landing page layout:
+5️⃣ EQUIPPERS MUSIC
+Title: Equippers Music
+Description: Listen to worship music and latest releases.
 
-Navbar
-Hero section
-Call-to-action button
+Link:
+https://open.spotify.com/artist/1eswTstCzVURi1R8PeAmE1?si=VT3vgyTwSje3bK34Lr1_Mg&nd=1&dlsi=57e704356b6e4265
 
-Use lots of whitespace.
+--------------------------------
 
--------------------------------------
+6️⃣ SUNDAY SETLIST
+Title: Sunday Setlist
+Description: Listen to the songs we worship with every Sunday.
 
-RESPONSIVENESS
+Link:
+https://open.spotify.com/user/31egdmybfbjuzyy74gn3orzat2ka?si=8b0cfa02db954531&nd=1&dlsi=5f087d6fd0c64cc9
 
-The layout must work on:
+--------------------------------
 
-Desktop
-Tablet
-Mobile
+ICON LIBRARIES
 
-Logo should scale proportionally.
+Use modern icons from:
 
--------------------------------------
+• Lucide Icons
+or
+• Heroicons
+or
+• Font Awesome
+
+Icons should be clean line-style icons.
+
+--------------------------------
+
+ANIMATION REQUIREMENTS
+
+Add the following animations:
+
+Page load:
+cards fade-in with stagger animation.
+
+Hover:
+card lifts slightly with shadow increase.
+
+Icons:
+subtle motion effect.
+
+Scroll:
+section fades into view when scrolled.
+
+--------------------------------
 
 TECHNICAL REQUIREMENTS
 
-Use:
+Provide:
 
-HTML
-CSS
-JavaScript
-SVG masking or clipPath
-SVG animated wave
+• clean HTML structure
+• modern CSS
+• responsive layout
+• animation using CSS or lightweight JS
+• accessible markup
 
-Animation should run automatically on page load.
+Ensure:
 
-Avoid heavy frameworks.
+• links open in new tab
+• works on mobile devices
+• smooth performance
+• easy to embed into existing website
 
-Do NOT use external animation libraries.
+--------------------------------
 
-Use pure CSS / SVG / JS.
-
--------------------------------------
-
-CODE QUALITY
-
-Return:
-
-1. clean HTML
-2. organized CSS
-3. structured JavaScript
-4. comments explaining each animation step
-
-Make the code production quality.
-
--------------------------------------
-
-IMPORTANT VISUAL GOAL
-
-The final animation should feel:
-
-premium
-smooth
-modern
-fluid
-
-The liquid fill must look like REAL WATER inside the logo.
-
--------------------------------------
-
-Assume the logo file path is:
-
-logo.png
+Goal:
+A modern church landing section that feels premium, inspirational, and interactive.

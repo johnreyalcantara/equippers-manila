@@ -50,8 +50,8 @@
           OUTLINE LAYER — visible instantly on page load.
           Shows only the thick white border of the logo, interior is transparent.
         -->
-        <image id="logoOutline" href="logo.png" x="2" y="2" width="196" height="196"
-          preserveAspectRatio="xMidYMid meet" filter="url(#outlineFilter)" />
+        <image id="logoOutline" href="logo.png" x="2" y="2" width="196" height="196" preserveAspectRatio="xMidYMid meet"
+          filter="url(#outlineFilter)" />
 
         <!--
           WAVE ANIMATION LAYER — liquid fill masked by logo shape.
@@ -83,13 +83,13 @@
     <nav class="navbar">
       <div class="nav-container">
         <a href="#" class="nav-brand">
-          <img src="logo.png" alt="Equippers Manila" class="nav-logo">
+          <img src="header.png" alt="Equippers Manila" class="nav-logo">
         </a>
         <div class="nav-links">
           <a href="#">About</a>
-          <a href="#">Services</a>
-          <a href="#">Connect</a>
-          <a href="#" class="btn btn-nav">Visit Us</a>
+          <a href="#connectHub">Connect</a>
+          <a href="#services">Services</a>
+          <a href="#visit" class="btn btn-nav">VISIT US</a>
         </div>
       </div>
     </nav>
@@ -101,14 +101,130 @@
         <h1 class="hero-title">Equippers <span>Manila</span></h1>
         <p class="hero-subtitle">Building a community of faith, purpose, and connection in the heart of Manila.</p>
         <div class="hero-buttons">
-          <a href="#" class="btn btn-primary">Get Started</a>
-          <a href="#" class="btn btn-outline">Learn More</a>
+          <a href="#connectHub" class="btn btn-primary">Get Started</a>
+          <a href="#connectHub" class="btn btn-outline">Learn More</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         CONNECT HUB — Quick Access Section
+         Appears before main content as a resource hub.
+         ═══════════════════════════════════════════ -->
+    <section class="connect-hub" id="connectHub">
+      <div class="container">
+
+        <!-- Section Header — center aligned, fade-in on scroll -->
+        <div class="hub-header">
+          <h2 class="hub-title">Connect With Equippers Manila</h2>
+          <p class="hub-subtitle">Explore resources, worship, and ways to get involved in our community.</p>
+        </div>
+
+        <!-- Card Grid — 3 cols desktop, 2 tablet, 1 mobile -->
+        <div class="hub-grid">
+
+          <!-- 1. 30 Day Devotional -->
+          <a href="https://drive.google.com/drive/folders/1cZiyZjngTXqNw5-hJ1XYPeyfuvUhzH79" target="_blank"
+            rel="noopener noreferrer" class="hub-card" aria-label="30 Day Devotional Plan">
+            <div class="hub-card-icon">
+              <!-- Lucide: Book Open -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
+            <h3 class="hub-card-title">30 Day Devotional Plan</h3>
+            <p class="hub-card-desc">Start a 30-day journey of faith and spiritual growth.</p>
+          </a>
+
+          <!-- 2. Join Equip Teams -->
+          <a href="https://docs.google.com/forms/d/1OCXzr4K8m8Zkz-fZoWlB5__lFJ5B4MavV-mt1GOCcxw/viewform?edit_requested=true"
+            target="_blank" rel="noopener noreferrer" class="hub-card" aria-label="Join Equip Teams">
+            <div class="hub-card-icon">
+              <!-- Lucide: Users -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <h3 class="hub-card-title">Join Equip Teams</h3>
+            <p class="hub-card-desc">Be part of a team and serve in our church community.</p>
+          </a>
+
+          <!-- 3. Facebook -->
+          <a href="https://www.facebook.com/equippersmanila" target="_blank" rel="noopener noreferrer" class="hub-card"
+            aria-label="Facebook">
+            <div class="hub-card-icon">
+              <!-- Lucide: Facebook -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </div>
+            <h3 class="hub-card-title">Facebook</h3>
+            <p class="hub-card-desc">Stay updated with church news and events.</p>
+          </a>
+
+          <!-- 4. Instagram -->
+          <a href="https://www.instagram.com/equippersmanila" target="_blank" rel="noopener noreferrer" class="hub-card"
+            aria-label="Instagram">
+            <div class="hub-card-icon">
+              <!-- Lucide: Instagram -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+              </svg>
+            </div>
+            <h3 class="hub-card-title">Instagram</h3>
+            <p class="hub-card-desc">Follow us for moments, stories, and encouragement.</p>
+          </a>
+
+          <!-- 5. Equippers Music -->
+          <a href="https://open.spotify.com/artist/1eswTstCzVURi1R8PeAmE1?si=VT3vgyTwSje3bK34Lr1_Mg&nd=1&dlsi=57e704356b6e4265"
+            target="_blank" rel="noopener noreferrer" class="hub-card" aria-label="Equippers Music">
+            <div class="hub-card-icon">
+              <!-- Lucide: Music -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            </div>
+            <h3 class="hub-card-title">Equippers Music</h3>
+            <p class="hub-card-desc">Listen to worship music and latest releases.</p>
+          </a>
+
+          <!-- 6. Sunday Setlist -->
+          <a href="https://open.spotify.com/user/31egdmybfbjuzyy74gn3orzat2ka?si=8b0cfa02db954531&nd=1&dlsi=5f087d6fd0c64cc9"
+            target="_blank" rel="noopener noreferrer" class="hub-card" aria-label="Sunday Setlist">
+            <div class="hub-card-icon">
+              <!-- Lucide: ListMusic -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15V6" />
+                <path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                <path d="M12 12H3" />
+                <path d="M16 6H3" />
+                <path d="M12 18H3" />
+              </svg>
+            </div>
+            <h3 class="hub-card-title">Sunday Setlist</h3>
+            <p class="hub-card-desc">Listen to the songs we worship with every Sunday.</p>
+          </a>
+
         </div>
       </div>
     </section>
 
     <!-- Features -->
-    <section class="features">
+    <section class="features" id="services">
       <div class="container">
         <p class="section-label">What We Offer</p>
         <h2 class="section-title">Everything you need</h2>
@@ -121,7 +237,8 @@
               </svg>
             </div>
             <h3>Sunday Services</h3>
-            <p>Join us every Sunday for an uplifting experience of worship, teaching, and community.</p>
+            <p>Join us every Sunday (8:30am and 10:30am) for an uplifting experience of worship, teaching, and
+              community.</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon icon-orange">
@@ -132,7 +249,7 @@
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </div>
-            <h3>Life Groups</h3>
+            <h3>E-Groups</h3>
             <p>Connect with others in small group settings designed for deeper relationships and growth.</p>
           </div>
           <div class="feature-card">
@@ -142,7 +259,7 @@
                   points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
             </div>
-            <h3>Serve Teams</h3>
+            <h3>Equip Teams</h3>
             <p>Discover your gifts and make an impact by serving alongside a passionate team.</p>
           </div>
         </div>
@@ -150,11 +267,12 @@
     </section>
 
     <!-- Call to Action -->
-    <section class="cta">
+    <section class="cta" id="visit">
       <div class="container">
         <h2>Ready to join us?</h2>
-        <p>Be part of something bigger. We'd love to see you this Sunday.</p>
-        <a href="#" class="btn btn-primary">Visit This Sunday</a>
+        <p>Be part of something bigger. We'd love to see you this Sunday at Ayala Malls Feliz, Cinema 4, Level 5</p>
+        <a href="https://www.google.com/maps/place/Ayala+Malls+Feliz/@14.6197791,121.0906327,17z/data=!3m1!4b1!4m6!3m5!1s0x3397b83c696bf5c3:0x4413a65835ae270e!8m2!3d14.6197791!4d121.0932076!16s%2Fg%2F11gdh07_v4?entry=ttu&g_ep=EgoyMDI2MDMxMS4wIKXMDSoASAFQAw%3D%3D"
+          class="btn btn-primary" target="_blank">Visit This Sunday</a>
       </div>
     </section>
 
