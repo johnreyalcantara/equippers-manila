@@ -61,12 +61,12 @@
         options: { responsive: true, plugins: { legend: { display: false } } }
       });
 
-      // Reservations chart
-      new Chart(document.getElementById('resChart'), {
+      // VIP (new attendees) chart
+      new Chart(document.getElementById('vipChart'), {
         type: 'bar',
         data: {
-          labels: data.reservations.map(r => r.service_date.split('T')[0] + ' ' + r.service_time),
-          datasets: [{ label: 'Reservations', data: data.reservations.map(r => r.count), backgroundColor: '#0a1628' }]
+          labels: data.vip.map(r => r.service_date.split('T')[0] + ' ' + r.service_time),
+          datasets: [{ label: 'VIP (New Attendees)', data: data.vip.map(r => r.count), backgroundColor: '#c9a84c' }]
         },
         options: { responsive: true, plugins: { legend: { display: false } } }
       });

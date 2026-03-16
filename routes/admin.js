@@ -62,10 +62,10 @@ router.get('/charts', async (req, res) => {
        GROUP BY s.id ORDER BY s.service_date DESC LIMIT 8`
     );
 
-    // Reservations per service (last 8)
-    const [resChart] = await pool.execute(
-      `SELECT s.service_date, s.service_time, COUNT(r.id) as count
-       FROM services s LEFT JOIN reservations r ON s.id = r.service_id AND r.status = 'RESERVED'
+    // VIP (new attendees) per service (last 8)
+    const [vipChart] = await pool.execute(
+      `SELECT s.service_date, s.service_time, COUNT(a.id) as count
+       FROM services s LEFT JOIN attendance a ON s.id = a.service_id AND a.status = 'ATTENDING' AND a.type = 'VIP'
        GROUP BY s.id ORDER BY s.service_date DESC LIMIT 8`
     );
 
@@ -77,7 +77,7 @@ router.get('/charts', async (req, res) => {
 
     res.json({
       attendance: attChart.reverse(),
-      reservations: resChart.reverse(),
+      vip: vipChart.reverse(),
       donations: donChart.reverse()
     });
   } catch (err) {
