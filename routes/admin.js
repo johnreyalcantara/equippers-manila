@@ -34,7 +34,7 @@ function dateFilter(column, filter, from, to) {
 // GET /api/admin/stats — dashboard summary
 router.get('/stats', async (req, res) => {
   try {
-    const [users] = await pool.execute('SELECT COUNT(*) as c FROM users WHERE role = "USER"');
+    const [users] = await pool.execute('SELECT COUNT(*) as c FROM users');
     const [attendance] = await pool.execute('SELECT COUNT(*) as c FROM attendance WHERE status = "ATTENDING"');
     const [reservations] = await pool.execute('SELECT COUNT(*) as c FROM reservations WHERE status = "RESERVED"');
     const [donations] = await pool.execute('SELECT COALESCE(SUM(amount),0) as total, COUNT(*) as c FROM donations');
