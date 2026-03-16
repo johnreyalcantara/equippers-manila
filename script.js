@@ -20,11 +20,11 @@
      ══════════════════════════════════════════════ */
 
   var TIMING = {
-    initialDelay:     2000,  // Show outline for 2s before fill begins
-    liquidFill:       4000,  // Step 1: liquid fill duration (4 seconds)
-    glowExpansion:     850,  // Step 2a: glow starts + radial expansion (~850ms)
-    whiteHold:         400,  // Step 2b: hold full white screen (~400ms)
-    fadeToLanding:     500   // Step 2c: fade out white to reveal landing (~500ms)
+    initialDelay: 2000,  // Show outline for 2s before fill begins
+    liquidFill: 4000,  // Step 1: liquid fill duration (4 seconds)
+    glowExpansion: 200,  // Step 2a: glow starts + radial expansion (~850ms)
+    whiteHold: 10,  // Step 2b: hold full white screen (~400ms)
+    fadeToLanding: 500   // Step 2c: fade out white to reveal landing (~500ms)
   };
 
   // SVG viewBox dimensions
@@ -41,10 +41,10 @@
      DOM REFERENCES
      ══════════════════════════════════════════════ */
 
-  var splash        = document.getElementById('splash');
-  var landing       = document.getElementById('landing');
-  var svgEl         = document.getElementById('splashSvg');
-  var waterPath     = document.getElementById('waterPath');
+  var splash = document.getElementById('splash');
+  var landing = document.getElementById('landing');
+  var svgEl = document.getElementById('splashSvg');
+  var waterPath = document.getElementById('waterPath');
   var glowExpansion = document.getElementById('glowExpansion');
 
   /* ══════════════════════════════════════════════
