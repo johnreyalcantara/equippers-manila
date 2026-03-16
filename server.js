@@ -27,7 +27,7 @@ app.use('/api/photos', require('./routes/photos'));
 app.use('/api/verses', require('./routes/verses'));
 app.use('/api/admin', require('./routes/admin'));
 
-// Seed admin account on startup if it doesn't exist
+// Seed admin account if it doesn't exist
 async function seedAdmin() {
   try {
     const [rows] = await pool.execute('SELECT id FROM users WHERE username = ?', ['eqprs_admin']);
@@ -44,8 +44,15 @@ async function seedAdmin() {
   }
 }
 
-// Start server
-app.listen(PORT, async () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  await seedAdmin();
-});
+// Local development — start the server
+// On Vercel, this file is imported by api/index.js instead
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, async () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    await seedAdmin();
+  });
+}
+
+// Export for Vercel serverless function
+module.exports = app;
+module.exports.seedAdmin = seedAdmin;
