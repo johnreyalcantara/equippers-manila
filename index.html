@@ -93,7 +93,6 @@
           <a href="#connectHub">Connect</a>
           <a href="#community">Community</a>
           <a href="#services">Services</a>
-          <a href="/pages/announcements.html">Announcements</a>
           <a href="/pages/login.html" class="btn btn-nav">LOGIN</a>
         </div>
       </div>
@@ -248,10 +247,6 @@
         <div id="communityGrid" class="community-grid">
           <p style="color:var(--gray-400);">Loading...</p>
         </div>
-
-        <div style="text-align:center; margin-top:2rem;">
-          <a href="/pages/community.html" class="btn btn-outline" style="border-color:var(--gray-600);color:var(--white);">View All & Apply to Join</a>
-        </div>
       </div>
     </section>
 
@@ -317,17 +312,17 @@
   <script src="script.js"></script>
   <script>
     // Mobile hamburger menu toggle
-    (function() {
+    (function () {
       var btn = document.getElementById('navHamburger');
       var links = document.getElementById('navLinks');
       if (!btn || !links) return;
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', function () {
         links.classList.toggle('open');
         btn.classList.toggle('active');
       });
       // Close menu when a link is clicked
-      links.querySelectorAll('a').forEach(function(a) {
-        a.addEventListener('click', function() {
+      links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
           links.classList.remove('open');
           btn.classList.remove('active');
         });
