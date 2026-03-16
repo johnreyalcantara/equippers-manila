@@ -16,6 +16,28 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Health check — test DB connection (visit /api/health in browser)
+app.get('/api/health', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT 1 as ok');
+    const [tables] = await pool.execute("SHOW TABLES");
+    res.json({
+      status: 'connected',
+      tables: tables.map(t => Object.values(t)[0]),
+      db_host: process.env.DB_HOST,
+      ssl: process.env.DB_SSL
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'failed',
+      error: err.message,
+      code: err.code,
+      db_host: process.env.DB_HOST,
+      ssl: process.env.DB_SSL
+    });
+  }
+});
+
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
