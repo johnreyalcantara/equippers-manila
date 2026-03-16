@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Groups — Equippers Manila</title>
+  <title>My Space — Equippers Manila</title>
   <link rel="icon" type="image/x-icon" href="/ico.png">
   <link rel="stylesheet" href="/css/common.css">
   <style>
@@ -20,7 +20,7 @@
       <a href="/pages/community.html">Community</a>
       <a href="/pages/chat.html">Chat</a>
       <a href="/pages/donations.html">Donations</a>
-      <a href="/pages/my-groups.html" id="leaderLink" class="active">My Groups</a>
+      <a href="/pages/my-groups.html" id="leaderLink" class="active">My Space</a>
       <a href="/pages/settings.html">Settings</a>
       <a class="nav-logout" onclick="API.logout()">Logout</a>
     </div>
@@ -94,10 +94,12 @@
 
   <script src="/js/api.js"></script>
   <script>
-    (function() {
+    (async function() {
       if (!API.requireAuth()) return;
       var user = API.getUser();
-      if (user.role !== 'LEADER' && user.role !== 'ADMIN') {
+      // Check if user leads anything (any role can be assigned as leader)
+      var isLeaderCheck = await API.get('/users/me/is-leader');
+      if (!isLeaderCheck || !isLeaderCheck.isLeader) {
         window.location.href = '/pages/dashboard.html';
         return;
       }

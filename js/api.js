@@ -86,13 +86,16 @@ const API = {
     return true;
   },
 
-  // Show leader-only nav links if user is LEADER or ADMIN
-  initLeaderNav() {
-    const user = this.getUser();
-    if (user && (user.role === 'LEADER' || user.role === 'ADMIN')) {
-      const link = document.getElementById('leaderLink');
-      if (link) link.style.display = '';
-    }
+  // Show "My Space" nav link if user leads any team, hub, or group
+  async initLeaderNav() {
+    if (!this.getToken()) return;
+    try {
+      const data = await this.get('/users/me/is-leader');
+      if (data && data.isLeader) {
+        var link = document.getElementById('leaderLink');
+        if (link) link.style.display = '';
+      }
+    } catch (e) { /* silently fail */ }
   }
 };
 

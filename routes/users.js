@@ -53,4 +53,20 @@ router.put('/me', verifyToken, async (req, res) => {
   }
 });
 
+// GET /api/users/me/is-leader — check if user leads any team, hub, or group
+router.get('/me/is-leader', verifyToken, async (req, res) => {
+  try {
+    const uid = req.user.id;
+    const [teams] = await pool.execute('SELECT COUNT(*) as c FROM equip_teams WHERE leader_user_id = ?', [uid]);
+    const [hubs] = await pool.execute('SELECT COUNT(*) as c FROM e_hubs WHERE leader_user_id = ?', [uid]);
+    const [groups] = await pool.execute('SELECT COUNT(*) as c FROM e_groups WHERE leader_user_id = ?', [uid]);
+    const isLeader = teams[0].c > 0 || hubs[0].c > 0 || groups[0].c > 0 ||
+                     req.user.role === 'LEADER' || req.user.role === 'ADMIN';
+    res.json({ isLeader });
+  } catch (err) {
+    console.error('Is-leader check error:', err);
+    res.json({ isLeader: false });
+  }
+});
+
 module.exports = router;
