@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Management — Admin</title>
+  <link rel="icon" type="image/x-icon" href="/ico.png">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .tab-bar { display:flex; gap:0.5rem; margin-bottom:2rem; flex-wrap:wrap; }
+    .tab-bar button { padding:0.6rem 1.25rem; border:none; border-radius:10px; font-weight:600; font-size:0.85rem; cursor:pointer; background:var(--gray-200); color:var(--gray-600); transition:all 0.2s; }
+    .tab-bar button.active { background:var(--navy); color:var(--white); }
+    .section { display:none; }
+    .section.active { display:block; }
+  </style>
+</head>
+<body>
+  <nav class="app-nav">
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt=""> Admin Panel</a>
+    <div class="app-nav-links">
+      <a href="/pages/admin/dashboard.html">Dashboard</a>
+      <a href="/pages/admin/crm.html" class="active">CRM</a>
+      <a href="/pages/admin/users.html">Users</a>
+      <a href="/pages/admin/attendance.html">Attendance</a>
+      <a href="/pages/admin/donations.html">Donations</a>
+      <a href="/pages/admin/photos.html">Photos</a>
+      <a class="nav-logout" onclick="API.logout()">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>CRM Management</h1>
+      <p>Manage announcements, equip teams, e-hubs, e-groups, and user roles</p>
+    </div>
+
+    <!-- CRM Stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-value" id="statTeams">0</div><div class="stat-label">Equip Teams</div></div>
+      <div class="stat-card"><div class="stat-value" id="statHubs">0</div><div class="stat-label">E-Hubs</div></div>
+      <div class="stat-card"><div class="stat-value" id="statGroups">0</div><div class="stat-label">E-Groups</div></div>
+      <div class="stat-card"><div class="stat-value" id="statRequests">0</div><div class="stat-label">Pending Requests</div></div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="active" onclick="showSection('announcements', this)">Announcements</button>
+      <button onclick="showSection('teams', this)">Equip Teams</button>
+      <button onclick="showSection('hubs', this)">E-Hubs</button>
+      <button onclick="showSection('groups', this)">E-Groups</button>
+      <button onclick="showSection('roles', this)">User Roles</button>
+    </div>
+
+    <div id="globalAlert"></div>
+
+    <!-- Announcements -->
+    <div class="section active" id="sec-announcements">
+      <div class="card">
+        <div class="card-title">Create Announcement</div>
+        <form id="announcementForm">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-group"><label>Title</label><input type="text" name="title" required></div>
+            <div class="form-group"><label>Event Date (optional)</label><input type="date" name="event_date"></div>
+            <div class="form-group"><label>Location (optional)</label><input type="text" name="location" placeholder="e.g. Cinema 4, Ayala Malls Feliz"></div>
+            <div class="form-group"><label>Image URL (optional)</label><input type="url" name="image_url" placeholder="https://..."></div>
+          </div>
+          <div class="form-group"><label>Description</label><textarea name="description" rows="3" required></textarea></div>
+          <button type="submit" class="btn btn-primary">Post Announcement</button>
+        </form>
+      </div>
+      <div class="card"><div class="card-title">All Announcements</div><div id="announcementList">Loading...</div></div>
+    </div>
+
+    <!-- Equip Teams -->
+    <div class="section" id="sec-teams">
+      <div class="card">
+        <div class="card-title">Create Equip Team</div>
+        <form id="teamForm" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:end;">
+          <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px;"><label>Team Name</label><input type="text" name="name" required></div>
+          <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px;"><label>Description</label><input type="text" name="description"></div>
+          <div class="form-group" style="margin-bottom:0;min-width:200px;"><label>Leader</label><select name="leader_user_id" id="teamLeaderSelect" required><option value="">Loading...</option></select></div>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+      </div>
+      <div class="card"><div class="card-title">All Equip Teams</div><div id="teamList">Loading...</div></div>
+    </div>
+
+    <!-- E-Hubs -->
+    <div class="section" id="sec-hubs">
+      <div class="card">
+        <div class="card-title">Create E-Hub</div>
+        <form id="hubForm" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:end;">
+          <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px;"><label>Hub Name</label><input type="text" name="name" required></div>
+          <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px;"><label>Description</label><input type="text" name="description"></div>
+          <div class="form-group" style="margin-bottom:0;min-width:200px;"><label>Leader</label><select name="leader_user_id" id="hubLeaderSelect" required><option value="">Loading...</option></select></div>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+      </div>
+      <div class="card"><div class="card-title">All E-Hubs</div><div id="hubList">Loading...</div></div>
+    </div>
+
+    <!-- E-Groups -->
+    <div class="section" id="sec-groups">
+      <div class="card"><div class="card-title">All E-Groups</div><p style="color:var(--gray-400);font-size:0.9rem;margin-bottom:1rem;">E-Groups are created by users with the Leader role. Assign the Leader role in the User Roles tab.</p><div id="groupList">Loading...</div></div>
+    </div>
+
+    <!-- User Roles -->
+    <div class="section" id="sec-roles">
+      <div class="card">
+        <div class="card-title">Assign User Roles</div>
+        <p style="color:var(--gray-400);font-size:0.9rem;margin-bottom:1rem;">Change a user's role to Leader so they can create E-Groups and manage join requests.</p>
+        <div id="userRoleList">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (!API.requireAuth() || !API.requireAdmin()) throw 'Not admin';
+
+    function showSection(name, btn) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + name).classList.add('active');
+      document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function showGlobalAlert(msg, type) {
+      const el = document.getElementById('globalAlert');
+      el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
+      setTimeout(() => el.innerHTML = '', 3000);
+    }
+
+    // Load stats
+    async function loadStats() {
+      try {
+        const s = await API.get('/admin/stats');
+        document.getElementById('statTeams').textContent = s.totalTeams || 0;
+        document.getElementById('statHubs').textContent = s.totalHubs || 0;
+        document.getElementById('statGroups').textContent = s.totalGroups || 0;
+        document.getElementById('statRequests').textContent = s.totalJoinRequests || 0;
+      } catch(e) { console.error(e); }
+    }
+
+    // Load user dropdowns for leader selection
+    async function loadLeaderDropdowns() {
+      try {
+        const users = await API.get('/admin/users?filter=');
+        const opts = users.map(u => '<option value="' + u.id + '">' + u.name + ' (@' + u.username + ') — ' + u.role + '</option>').join('');
+        document.getElementById('teamLeaderSelect').innerHTML = '<option value="">Select leader</option>' + opts;
+        document.getElementById('hubLeaderSelect').innerHTML = '<option value="">Select leader</option>' + opts;
+      } catch(e) { console.error(e); }
+    }
+
+    // ─── Announcements ───
+    document.getElementById('announcementForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      try {
+        const data = Object.fromEntries(new FormData(e.target));
+        await API.post('/announcements', data);
+        showGlobalAlert('Announcement posted!', 'success');
+        e.target.reset();
+        loadAnnouncements();
+      } catch(err) { showGlobalAlert(err.message, 'error'); }
+    });
+
+    async function loadAnnouncements() {
+      try {
+        const rows = await fetch('/api/announcements').then(r => r.json());
+        const el = document.getElementById('announcementList');
+        if (rows.length === 0) { el.innerHTML = '<p style="color:var(--gray-400)">None yet.</p>'; return; }
+        el.innerHTML = '<table class="data-table"><thead><tr><th>Title</th><th>Date</th><th>Location</th><th>Created</th><th></th></tr></thead><tbody>' +
+          rows.map(a => '<tr><td>' + a.title + '</td><td>' + (a.event_date ? new Date(a.event_date).toLocaleDateString() : '—') + '</td><td>' + (a.location || '—') + '</td><td>' + new Date(a.created_at).toLocaleDateString() + '</td><td><button class="btn btn-danger btn-sm" onclick="deleteAnnouncement(' + a.id + ')">Delete</button></td></tr>').join('') +
+          '</tbody></table>';
+      } catch(e) { console.error(e); }
+    }
+
+    window.deleteAnnouncement = async function(id) {
+      try { await API.del('/announcements/' + id); loadAnnouncements(); showGlobalAlert('Deleted.', 'success'); }
+      catch(e) { showGlobalAlert(e.message, 'error'); }
+    };
+
+    // ─── Equip Teams ───
+    document.getElementById('teamForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      try {
+        const data = Object.fromEntries(new FormData(e.target));
+        data.leader_user_id = parseInt(data.leader_user_id);
+        await API.post('/equip-teams', data);
+        showGlobalAlert('Equip Team created!', 'success');
+        e.target.reset();
+        loadTeams();
+        loadStats();
+      } catch(err) { showGlobalAlert(err.message, 'error'); }
+    });
+
+    async function loadTeams() {
+      try {
+        const rows = await fetch('/api/equip-teams').then(r => r.json());
+        const el = document.getElementById('teamList');
+        if (rows.length === 0) { el.innerHTML = '<p style="color:var(--gray-400)">None yet.</p>'; return; }
+        el.innerHTML = '<table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Leader</th><th>Members</th><th>Created</th></tr></thead><tbody>' +
+          rows.map(t => '<tr><td>' + t.id + '</td><td>' + t.name + '</td><td>' + t.leader_name + '</td><td>' + t.total_members + '</td><td>' + new Date(t.created_at).toLocaleDateString() + '</td></tr>').join('') +
+          '</tbody></table>';
+      } catch(e) { console.error(e); }
+    }
+
+    // ─── E-Hubs ───
+    document.getElementById('hubForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      try {
+        const data = Object.fromEntries(new FormData(e.target));
+        data.leader_user_id = parseInt(data.leader_user_id);
+        await API.post('/e-hubs', data);
+        showGlobalAlert('E-Hub created!', 'success');
+        e.target.reset();
+        loadHubs();
+        loadStats();
+      } catch(err) { showGlobalAlert(err.message, 'error'); }
+    });
+
+    async function loadHubs() {
+      try {
+        const rows = await fetch('/api/e-hubs').then(r => r.json());
+        const el = document.getElementById('hubList');
+        if (rows.length === 0) { el.innerHTML = '<p style="color:var(--gray-400)">None yet.</p>'; return; }
+        el.innerHTML = '<table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Leader</th><th>Members</th><th>Created</th></tr></thead><tbody>' +
+          rows.map(h => '<tr><td>' + h.id + '</td><td>' + h.name + '</td><td>' + h.leader_name + '</td><td>' + h.total_members + '</td><td>' + new Date(h.created_at).toLocaleDateString() + '</td></tr>').join('') +
+          '</tbody></table>';
+      } catch(e) { console.error(e); }
+    }
+
+    // ─── E-Groups ───
+    async function loadGroups() {
+      try {
+        const rows = await fetch('/api/e-groups').then(r => r.json());
+        const el = document.getElementById('groupList');
+        if (rows.length === 0) { el.innerHTML = '<p style="color:var(--gray-400)">None yet. Assign Leader role to a user so they can create groups.</p>'; return; }
+        el.innerHTML = '<table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Leader</th><th>Day</th><th>Location</th><th>Members</th></tr></thead><tbody>' +
+          rows.map(g => '<tr><td>' + g.id + '</td><td>' + g.name + '</td><td>' + g.leader_name + '</td><td>' + (g.meeting_day || '—') + '</td><td>' + (g.meeting_location || '—') + '</td><td>' + g.total_members + '</td></tr>').join('') +
+          '</tbody></table>';
+      } catch(e) { console.error(e); }
+    }
+
+    // ─── User Roles ───
+    async function loadUserRoles() {
+      try {
+        const users = await API.get('/admin/users?filter=');
+        const el = document.getElementById('userRoleList');
+        el.innerHTML = '<table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Username</th><th>Current Role</th><th>Change Role</th></tr></thead><tbody>' +
+          users.map(u => `<tr>
+            <td>${u.id}</td><td>${u.name}</td><td>@${u.username}</td>
+            <td><span class="badge ${u.role === 'ADMIN' ? 'badge-info' : u.role === 'LEADER' ? 'badge-warning' : 'badge-success'}">${u.role}</span></td>
+            <td>
+              <select onchange="changeRole(${u.id}, this.value)" style="padding:0.4rem;border-radius:6px;border:1px solid var(--gray-200);font-size:0.85rem;">
+                <option value="USER" ${u.role === 'USER' ? 'selected' : ''}>User</option>
+                <option value="LEADER" ${u.role === 'LEADER' ? 'selected' : ''}>Leader</option>
+                <option value="ADMIN" ${u.role === 'ADMIN' ? 'selected' : ''}>Admin</option>
+              </select>
+            </td>
+          </tr>`).join('') +
+          '</tbody></table>';
+      } catch(e) { console.error(e); }
+    }
+
+    window.changeRole = async function(userId, role) {
+      try {
+        await API.put('/admin/users/' + userId + '/role', { role });
+        showGlobalAlert('Role updated to ' + role, 'success');
+        loadUserRoles();
+      } catch(e) { showGlobalAlert(e.message, 'error'); }
+    };
+
+    loadStats();
+    loadLeaderDropdowns();
+    loadAnnouncements();
+    loadTeams();
+    loadHubs();
+    loadGroups();
+    loadUserRoles();
+  </script>
+</body>
+</html>

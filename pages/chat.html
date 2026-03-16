@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat — Equippers Manila</title>
+  <link rel="icon" type="image/x-icon" href="/ico.png">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    body { background: var(--gray-100); }
+    .chat-layout { display:grid; grid-template-columns:280px 1fr; height:calc(100vh - 60px); max-width:1200px; margin:0 auto; }
+    .chat-sidebar { background:var(--white); border-right:1px solid var(--gray-200); overflow-y:auto; }
+    .chat-sidebar-title { padding:1.25rem; font-weight:700; color:var(--navy); font-size:1.1rem; border-bottom:1px solid var(--gray-200); }
+    .room-item { padding:1rem 1.25rem; cursor:pointer; border-bottom:1px solid var(--gray-100); transition:background 0.15s; }
+    .room-item:hover, .room-item.active { background:var(--gray-50); }
+    .room-item.active { border-left:3px solid var(--orange); }
+    .room-item .room-name { font-weight:600; font-size:0.9rem; color:var(--navy); }
+    .room-item .room-type { font-size:0.75rem; color:var(--gray-400); }
+
+    .chat-main { display:flex; flex-direction:column; background:var(--gray-50); }
+    .chat-header { padding:1rem 1.5rem; background:var(--white); border-bottom:1px solid var(--gray-200); font-weight:700; color:var(--navy); }
+    .chat-messages { flex:1; overflow-y:auto; padding:1.5rem; display:flex; flex-direction:column; gap:0.75rem; }
+    .chat-empty { flex:1; display:flex; align-items:center; justify-content:center; color:var(--gray-400); }
+
+    .msg { max-width:70%; padding:0.7rem 1rem; border-radius:16px; font-size:0.9rem; line-height:1.5; word-wrap:break-word; }
+    .msg-other { background:var(--white); border:1px solid var(--gray-200); align-self:flex-start; border-bottom-left-radius:4px; }
+    .msg-mine { background:var(--navy); color:var(--white); align-self:flex-end; border-bottom-right-radius:4px; }
+    .msg-sender { font-size:0.75rem; font-weight:600; color:var(--orange); margin-bottom:0.2rem; }
+    .msg-time { font-size:0.7rem; color:var(--gray-400); margin-top:0.2rem; }
+    .msg-mine .msg-time { color:rgba(255,255,255,0.5); }
+
+    .chat-input { padding:1rem 1.5rem; background:var(--white); border-top:1px solid var(--gray-200); display:flex; gap:0.75rem; }
+    .chat-input input { flex:1; padding:0.75rem 1rem; border:1.5px solid var(--gray-200); border-radius:24px; font-size:0.9rem; font-family:inherit; }
+    .chat-input input:focus { outline:none; border-color:var(--orange); }
+    .chat-input button { padding:0.75rem 1.5rem; border-radius:24px; border:none; background:var(--orange); color:var(--white); font-weight:600; cursor:pointer; }
+
+    @media(max-width:768px) {
+      .chat-layout { grid-template-columns:1fr; }
+      .chat-sidebar { display:none; }
+      .chat-sidebar.show { display:block; position:fixed; inset:0; z-index:200; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="app-nav">
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt=""> Equippers Manila</a>
+    <div class="app-nav-links">
+      <a href="/pages/announcements.html">Announcements</a>
+      <a href="/pages/community.html">Community</a>
+      <a href="/pages/chat.html" class="active">Chat</a>
+      <a href="/pages/dashboard.html">Dashboard</a>
+      <a class="nav-logout" onclick="API.logout()">Logout</a>
+    </div>
+  </nav>
+
+  <div class="chat-layout">
+    <div class="chat-sidebar" id="sidebar">
+      <div class="chat-sidebar-title">Group Chats</div>
+      <div id="roomList"><div style="padding:1rem;color:var(--gray-400)">Loading...</div></div>
+    </div>
+
+    <div class="chat-main">
+      <div class="chat-header" id="chatHeader">Select a chat room</div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-empty">Select a group chat to start messaging</div>
+      </div>
+      <div class="chat-input" id="chatInput" style="display:none;">
+        <input type="text" id="msgInput" placeholder="Type a message..." autocomplete="off">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (!API.requireAuth()) throw 'Not logged in';
+
+    const currentUser = API.getUser();
+    let activeRoomId = null;
+    let pollInterval = null;
+
+    // Load rooms user belongs to
+    async function loadRooms() {
+      try {
+        const rooms = await API.get('/chat/rooms');
+        const el = document.getElementById('roomList');
+        if (rooms.length === 0) {
+          el.innerHTML = '<div style="padding:1rem;color:var(--gray-400);">Join a team, hub, or group to access chat.</div>';
+          return;
+        }
+        el.innerHTML = rooms.map(r => {
+          const typeLabel = { EQUIPTEAM: 'Equip Team', EHUB: 'E-Hub', EGROUP: 'E-Group' }[r.type] || r.type;
+          return `<div class="room-item" id="room-${r.id}" onclick="openRoom(${r.id}, '${r.name.replace(/'/g, "\\'")}')">
+            <div class="room-name">${r.name}</div>
+            <div class="room-type">${typeLabel}</div>
+          </div>`;
+        }).join('');
+      } catch(e) { console.error(e); }
+    }
+
+    // Open a chat room
+    async function openRoom(roomId, roomName) {
+      activeRoomId = roomId;
+      document.getElementById('chatHeader').textContent = roomName;
+      document.getElementById('chatInput').style.display = 'flex';
+
+      // Highlight active room
+      document.querySelectorAll('.room-item').forEach(r => r.classList.remove('active'));
+      const roomEl = document.getElementById('room-' + roomId);
+      if (roomEl) roomEl.classList.add('active');
+
+      await loadMessages();
+
+      // Start polling for new messages every 3 seconds
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(loadMessages, 3000);
+    }
+
+    // Load messages for active room
+    async function loadMessages() {
+      if (!activeRoomId) return;
+      try {
+        const msgs = await API.get('/chat/rooms/' + activeRoomId + '/messages?limit=100');
+        const el = document.getElementById('chatMessages');
+
+        if (msgs.length === 0) {
+          el.innerHTML = '<div class="chat-empty">No messages yet. Say hello!</div>';
+          return;
+        }
+
+        const wasAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50;
+
+        el.innerHTML = msgs.map(m => {
+          const isMine = m.user_id === currentUser.id;
+          const time = new Date(m.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+          return `<div class="msg ${isMine ? 'msg-mine' : 'msg-other'}">
+            ${!isMine ? '<div class="msg-sender">' + m.sender_name + '</div>' : ''}
+            <div>${m.message}</div>
+            <div class="msg-time">${time}</div>
+          </div>`;
+        }).join('');
+
+        // Auto-scroll to bottom if user was at bottom
+        if (wasAtBottom) el.scrollTop = el.scrollHeight;
+      } catch(e) { console.error(e); }
+    }
+
+    // Send message
+    async function sendMessage() {
+      const input = document.getElementById('msgInput');
+      const msg = input.value.trim();
+      if (!msg || !activeRoomId) return;
+      input.value = '';
+      try {
+        await API.post('/chat/rooms/' + activeRoomId + '/messages', { message: msg });
+        await loadMessages();
+        // Scroll to bottom
+        const el = document.getElementById('chatMessages');
+        el.scrollTop = el.scrollHeight;
+      } catch(e) { console.error(e); }
+    }
+
+    // Send on Enter key
+    document.getElementById('msgInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    loadRooms();
+  </script>
+</body>
+</html>

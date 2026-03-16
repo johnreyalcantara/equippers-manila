@@ -7,8 +7,11 @@
       const s = await API.get('/admin/stats');
       document.getElementById('statUsers').textContent = s.totalUsers;
       document.getElementById('statAttendees').textContent = s.totalAttendees;
-      document.getElementById('statReservations').textContent = s.totalReservations;
       document.getElementById('statDonations').textContent = parseFloat(s.totalDonations).toLocaleString();
+      document.getElementById('statTeams').textContent = s.totalTeams || 0;
+      document.getElementById('statHubs').textContent = s.totalHubs || 0;
+      document.getElementById('statGroups').textContent = s.totalGroups || 0;
+      document.getElementById('statJoinReqs').textContent = s.totalJoinRequests || 0;
     } catch (e) { console.error(e); }
   }
 

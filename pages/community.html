@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community — Equippers Manila</title>
+  <link rel="icon" type="image/x-icon" href="/ico.png">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .community-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1.25rem; }
+    .community-card { background:var(--white); border:1px solid var(--gray-200); border-radius:16px; padding:1.75rem; transition:transform 0.2s,box-shadow 0.2s; }
+    .community-card:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,0.06); }
+    .community-card h3 { color:var(--navy); margin-bottom:0.4rem; }
+    .community-card .meta { font-size:0.85rem; color:var(--gray-400); margin-bottom:0.75rem; }
+    .community-card p { font-size:0.9rem; color:var(--gray-600); line-height:1.6; margin-bottom:1rem; }
+    .tab-bar { display:flex; gap:0.5rem; margin-bottom:2rem; }
+    .tab-bar button { padding:0.6rem 1.5rem; border:none; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; background:var(--gray-200); color:var(--gray-600); transition:all 0.2s; }
+    .tab-bar button.active { background:var(--navy); color:var(--white); }
+  </style>
+</head>
+<body>
+  <nav class="app-nav">
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt=""> Equippers Manila</a>
+    <div class="app-nav-links">
+      <a href="/pages/announcements.html">Announcements</a>
+      <a href="/pages/community.html" class="active">Community</a>
+      <a href="/pages/chat.html">Chat</a>
+      <a href="/pages/dashboard.html">Dashboard</a>
+      <a class="nav-logout" id="authLink"></a>
+    </div>
+  </nav>
+  <div class="page">
+    <div class="page-header">
+      <h1>Our Community</h1>
+      <p>Explore Equip Teams, E-Hubs, and E-Groups — join and get connected</p>
+    </div>
+
+    <div class="tab-bar">
+      <button class="active" onclick="showTab('teams', this)">Equip Teams</button>
+      <button onclick="showTab('hubs', this)">E-Hubs</button>
+      <button onclick="showTab('groups', this)">E-Groups</button>
+    </div>
+
+    <div id="alert" style="display:none;"></div>
+    <div id="content" class="community-grid">Loading...</div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const link = document.getElementById('authLink');
+    const isLoggedIn = !!API.getToken();
+    if (isLoggedIn) { link.textContent = 'Logout'; link.onclick = () => API.logout(); link.className = 'nav-logout'; }
+    else { link.textContent = 'Login'; link.href = '/pages/login.html'; }
+
+    let currentTab = 'teams';
+
+    function showTab(tab, btn) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadData();
+    }
+
+    function showAlert(msg, type) {
+      const el = document.getElementById('alert');
+      el.style.display = 'block';
+      el.className = 'alert alert-' + type;
+      el.textContent = msg;
+      setTimeout(() => el.style.display = 'none', 3000);
+    }
+
+    async function applyJoin(type, id) {
+      if (!isLoggedIn) { window.location.href = '/pages/login.html'; return; }
+      try {
+        const endpoints = { teams: '/equip-teams/apply', hubs: '/e-hubs/apply', groups: '/e-groups/apply' };
+        const bodyKey = { teams: 'team_id', hubs: 'hub_id', groups: 'group_id' };
+        await API.post(endpoints[type], { [bodyKey[type]]: id });
+        showAlert('Join request submitted!', 'success');
+      } catch(e) { showAlert(e.message, 'error'); }
+    }
+
+    async function loadData() {
+      const el = document.getElementById('content');
+      try {
+        const endpoints = { teams: '/api/equip-teams', hubs: '/api/e-hubs', groups: '/api/e-groups' };
+        const rows = await fetch(endpoints[currentTab]).then(r => r.json());
+        if (rows.length === 0) { el.innerHTML = '<p style="color:var(--gray-400)">None created yet.</p>'; return; }
+
+        el.innerHTML = rows.map(item => `
+          <div class="community-card">
+            <h3>${item.name}</h3>
+            <div class="meta">Led by ${item.leader_name} · ${item.total_members} member${item.total_members !== 1 ? 's' : ''}
+              ${item.meeting_day ? ' · ' + item.meeting_day : ''}</div>
+            <p>${item.description || 'No description.'}</p>
+            ${item.meeting_location ? '<p style="font-size:0.8rem;color:var(--gray-400);">📍 ' + item.meeting_location + '</p>' : ''}
+            ${isLoggedIn ? '<button class="btn btn-primary btn-sm" onclick="applyJoin(\'' + currentTab + '\',' + item.id + ')">Apply to Join</button>' : '<a href="/pages/login.html" class="btn btn-outline btn-sm">Login to Join</a>'}
+          </div>
+        `).join('');
+      } catch(e) { console.error(e); el.innerHTML = '<p style="color:var(--danger)">Failed to load.</p>'; }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

@@ -13,9 +13,9 @@
     <a href="/" class="app-nav-brand"><img src="/header.png" alt=""> Admin Panel</a>
     <div class="app-nav-links">
       <a href="/pages/admin/dashboard.html" class="active">Dashboard</a>
+      <a href="/pages/admin/crm.html">CRM</a>
       <a href="/pages/admin/users.html">Users</a>
       <a href="/pages/admin/attendance.html">Attendance</a>
-      <a href="/pages/admin/reservations.html">Reservations</a>
       <a href="/pages/admin/donations.html">Donations</a>
       <a href="/pages/admin/photos.html">Photos</a>
       <a class="nav-logout" onclick="API.logout()">Logout</a>
@@ -32,8 +32,11 @@
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-value" id="statUsers">0</div><div class="stat-label">Total Users</div></div>
       <div class="stat-card"><div class="stat-value" id="statAttendees">0</div><div class="stat-label">Total Attendees</div></div>
-      <div class="stat-card"><div class="stat-value" id="statReservations">0</div><div class="stat-label">Total Reservations</div></div>
       <div class="stat-card"><div class="stat-value" id="statDonations">0</div><div class="stat-label">Total Donations (PHP)</div></div>
+      <div class="stat-card"><div class="stat-value" id="statTeams">0</div><div class="stat-label">Equip Teams</div></div>
+      <div class="stat-card"><div class="stat-value" id="statHubs">0</div><div class="stat-label">E-Hubs</div></div>
+      <div class="stat-card"><div class="stat-value" id="statGroups">0</div><div class="stat-label">E-Groups</div></div>
+      <div class="stat-card"><div class="stat-value" id="statJoinReqs">0</div><div class="stat-label">Pending Requests</div></div>
     </div>
 
     <!-- Create Service -->

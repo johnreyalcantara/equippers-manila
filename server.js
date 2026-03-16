@@ -48,6 +48,11 @@ app.use('/api/donations', require('./routes/donations'));
 app.use('/api/photos', require('./routes/photos'));
 app.use('/api/verses', require('./routes/verses'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/announcements', require('./routes/announcements'));
+app.use('/api/equip-teams', require('./routes/equip-teams'));
+app.use('/api/e-hubs', require('./routes/e-hubs'));
+app.use('/api/e-groups', require('./routes/e-groups'));
+app.use('/api/chat', require('./routes/chat'));
 
 // Seed admin account if it doesn't exist
 async function seedAdmin() {

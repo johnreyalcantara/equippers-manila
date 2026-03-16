@@ -39,12 +39,26 @@ router.get('/stats', async (req, res) => {
     const [reservations] = await pool.execute('SELECT COUNT(*) as c FROM reservations WHERE status = "RESERVED"');
     const [donations] = await pool.execute('SELECT COALESCE(SUM(amount),0) as total, COUNT(*) as c FROM donations');
 
+    // CRM stats
+    const [teams] = await pool.execute('SELECT COUNT(*) as c FROM equip_teams');
+    const [hubs] = await pool.execute('SELECT COUNT(*) as c FROM e_hubs');
+    const [groups] = await pool.execute('SELECT COUNT(*) as c FROM e_groups');
+    const [joinReqs] = await pool.execute(
+      `SELECT (SELECT COUNT(*) FROM equip_team_requests WHERE status='PENDING') +
+              (SELECT COUNT(*) FROM e_hub_requests WHERE status='PENDING') +
+              (SELECT COUNT(*) FROM e_group_requests WHERE status='PENDING') as c`
+    );
+
     res.json({
       totalUsers: users[0].c,
       totalAttendees: attendance[0].c,
       totalReservations: reservations[0].c,
       totalDonations: donations[0].total,
-      donationCount: donations[0].c
+      donationCount: donations[0].c,
+      totalTeams: teams[0].c,
+      totalHubs: hubs[0].c,
+      totalGroups: groups[0].c,
+      totalJoinRequests: joinReqs[0].c
     });
   } catch (err) {
     console.error('Admin stats error:', err);
@@ -239,6 +253,21 @@ router.post('/services', async (req, res) => {
   } catch (err) {
     console.error('Create service error:', err);
     res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// PUT /api/admin/users/:id/role — assign role to user
+router.put('/users/:id/role', async (req, res) => {
+  try {
+    const { role } = req.body;
+    if (!['USER', 'LEADER', 'ADMIN'].includes(role)) {
+      return res.status(400).json({ error: 'Invalid role. Must be USER, LEADER, or ADMIN.' });
+    }
+    await pool.execute('UPDATE users SET role = ? WHERE id = ?', [role, req.params.id]);
+    res.json({ message: 'Role updated to ' + role + '.' });
+  } catch (err) {
+    console.error('Update role error:', err);
+    res.status(500).json({ error: 'Server error: ' + err.message });
   }
 });
 

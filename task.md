@@ -1,262 +1,295 @@
-You are a senior full-stack engineer.
+You are a senior full-stack architect.
 
-I have an existing church website for Equippers Manila. I want to ADD a full user system and service attendance management system.
+I already have an existing church website for Equippers Manila.
 
-Your task is to design and implement the system architecture, database schema, backend logic, and UI components.
+The system is already deployed on Vercel and connected to a TiDB Cloud database.
 
-The solution should be scalable, secure, and easy to maintain.
+You must design all solutions so they work with the following stack.
 
-Assume the system will use:
+---------------------------------------
 
-Frontend:
-HTML, CSS, JavaScript
+CURRENT STACK
 
-Backend:
-Node.js / Express (or similar REST backend)
+Hosting / Deployment
+Vercel
 
-Database:
-MySQL
+Database
+TiDB Cloud (MySQL compatible)
 
--------------------------------------
+Backend
+Vercel Serverless Functions (Node.js)
 
-CORE FEATURES
+Frontend
+HTML + CSS + JavaScript
 
-The website should allow users (church attendees) to:
+Realtime features
+Use a FREE realtime solution compatible with serverless environments such as:
 
-1. Create an account (Sign Up)
-2. Login
-3. Reserve seats for Sunday service
-4. Mark themselves as attending service
-5. Cancel attendance or reservation
-6. Send donations via GCash
-7. Request photography for the service
-8. View their photos in a personal album
-9. Track their church attendance streak
-10. See a daily Bible verse that refreshes every day
+Firebase Realtime Database
+or
+Supabase Realtime
+or
+WebSocket service compatible with serverless
 
--------------------------------------
+DO NOT design a traditional persistent Node server.
 
-AUTHENTICATION SYSTEM
+All APIs must work as serverless API routes.
 
-Create a login system with roles.
+---------------------------------------
+
+GOAL
+
+Transform the church website into a lightweight Church CRM system with the following modules:
+
+• Announcement / Event board
+• Volunteer management (Equip Teams)
+• Hubs management (E-HUBS)
+• Small group management (E-GROUPS)
+• Realtime group communication
+• Membership tracking
+
+---------------------------------------
+
+PUBLIC ACCESS (NO LOGIN)
+
+Visitors should be able to see the following lists without logging in:
+
+Equip Teams
+E-Hubs
+E-Groups
+
+Each item must display:
+
+• name
+• description
+• leader
+• total members
+
+However only logged-in users can apply to join.
+
+---------------------------------------
+
+ANNOUNCEMENT / EVENT MANAGEMENT
+
+Admins can create announcements or events.
+
+Fields:
+
+title
+description
+event_date
+location
+image_url
+created_by
+created_at
+
+Announcements appear on a public announcement board.
+
+---------------------------------------
+
+VOLUNTEER MANAGEMENT (EQUIP TEAMS)
+
+Admins create Equip Teams.
+
+Fields:
+
+name
+description
+leader_user_id
+created_at
+
+Users can view teams and apply to join.
+
+Each team should display:
+
+name
+description
+leader
+total_members
+
+Team leader can approve or reject join requests.
+
+---------------------------------------
+
+HUBS MANAGEMENT (E-HUBS)
+
+Admins create E-HUBS.
+
+Fields:
+
+name
+description
+leader_user_id
+created_at
+
+Users can apply to join.
+
+Hub leaders can approve or reject requests.
+
+---------------------------------------
+
+GROUP MANAGEMENT (E-GROUPS)
+
+E-Groups are small groups created by users with role "leader".
+
+Admin assigns the leader role to users.
+
+Leader users can create groups.
+
+Fields:
+
+name
+description
+meeting_day
+meeting_location
+leader_user_id
+
+Users can apply to join.
+
+Group leaders can approve or reject join requests.
+
+Each group displays:
+
+name
+description
+leader
+total_members
+
+---------------------------------------
+
+COMMUNICATION SYSTEM
+
+Every Equip Team, E-Hub, and E-Group automatically gets a group chat.
+
+Chat room name format:
+
+TYPE_NAME
+
+Examples:
+
+E-HUB_Youth
+EQUIPTEAM_Worship
+EGROUP_YoungAdults
+
+When a user joins a team, hub, or group they automatically join the chat.
+
+Chat should support:
+
+• realtime messages
+• message history
+• sender name
+• timestamp
+
+UI should resemble Messenger-style chat bubbles.
+
+Because the system is deployed on Vercel, use a realtime solution that works without a persistent server.
+
+---------------------------------------
+
+USER ROLES
 
 Roles:
-- USER
-- ADMIN
 
-Sign Up page:
-Users create accounts using:
-- name
-- age
-- email
-- username
-- password
+user
+leader
+admin
 
-Login page:
-Users can login with username and password.
+Admins can:
 
-Admins also login from the same page but have admin privileges.
+assign leader roles
+create Equip Teams
+create E-Hubs
+create announcements
+view system analytics
 
-Admin credentials should exist in the database but are predefined:
+---------------------------------------
 
-username: eqprs_admin
-password: eqprs_mnl_2026!
+ADMIN DASHBOARD
 
--------------------------------------
-
-USER DASHBOARD
-
-After login, users see their personal dashboard.
-
-Dashboard includes:
-
-Attendance tracker:
-- shows total services attended
-- shows attendance streak (consecutive weeks attended)
-
-Daily Bible Verse:
-- automatically generated
-- resets every day at 12:00 AM Philippine Time (UTC+8)
-
-Service Attendance Section:
-
-Buttons:
-[ Reserve Seat ]
-[ Mark As Attending ]
-[ Cancel Attendance ]
-
-When user clicks:
-
-Reserve Seat
-→ recorded in reservations table
-
-Mark As Attending
-→ recorded in attendance table
-
-Cancel Attendance
-→ removes record
-
--------------------------------------
-
-DONATIONS (GCASH)
-
-Users can submit donations via GCash.
-
-Donation page should:
-
-1. Display church GCash QR code
-2. Allow user to input:
-   - donation amount
-   - reference number
-   - optional message
-3. Submit donation record
-
-Admin can see all donations.
-
--------------------------------------
-
-PHOTO REQUEST + ALBUM
-
-Users can request photography coverage.
-
-Features:
-
-Request Photo
-→ user submits request for the service
-
-Photo Album
-→ user can view all photos assigned to them
-
-Admin can upload photos and assign them to users.
-
--------------------------------------
-
-ACCOUNT SETTINGS
-
-Users can update:
-
-- name
-- age
-- email
-- username
-- password
-
--------------------------------------
-
-ADMIN PANEL
-
-Admins have a separate dashboard.
-
-Admin Dashboard shows:
+Admin dashboard shows:
 
 Total Users
-Total Attendees
-Total Seat Reservations
-Total Donations
+Total Equip Teams
+Total E-Hubs
+Total E-Groups
+Total Join Requests
 
-Charts per service.
+Admin can view lists of:
 
--------------------------------------
+Users
+Teams
+Hubs
+Groups
+Requests
 
-ADMIN DATA TABLES
-
-Admin can view:
-
-1. Users list
-2. Attendance list
-3. Reservations list
-4. Donations list
-5. Photo requests
-
-Each table must have GLOBAL FILTER options:
-
-Filter options:
-
-- Today
-- This Week
-- This Month
-- This Year
-- Custom Date Range
-
--------------------------------------
+---------------------------------------
 
 DATABASE DESIGN
 
-Create all required MySQL tables.
+Create a full MySQL-compatible schema for TiDB.
 
-Required tables include:
+Tables should include:
 
 users
-admins
-services
-attendance
-reservations
-donations
-photo_requests
-photos
-daily_verses
+roles
+announcements
 
-Design full schema including:
+equip_teams
+equip_team_members
+equip_team_requests
 
-- primary keys
-- foreign keys
-- timestamps
-- indexes
+e_hubs
+e_hub_members
+e_hub_requests
 
--------------------------------------
+e_groups
+e_group_members
+e_group_requests
 
-ATTENDANCE STREAK LOGIC
+chat_rooms
+chat_messages
 
-A streak increases when a user attends consecutive weekly services.
+All tables must include:
 
-If a week is skipped, streak resets.
+primary keys
+foreign keys
+indexes
+created_at timestamps
 
--------------------------------------
+---------------------------------------
 
-DAILY BIBLE VERSE SYSTEM
+API DESIGN
 
-A daily verse should automatically appear each day.
+Because this runs on Vercel, design APIs as serverless endpoints.
 
-Rules:
+Example structure:
 
-- changes every day
-- resets at 12:00 AM Philippine Time
-- verses can come from database or API
+/api/auth/login
+/api/auth/signup
 
--------------------------------------
+/api/equip-teams
+/api/equip-teams/apply
 
-ADMIN ANALYTICS
+/api/e-hubs
+/api/e-hubs/apply
 
-Admin dashboard should display:
+/api/e-groups
+/api/e-groups/apply
 
-Charts showing:
+/api/announcements
 
-- attendance per service
-- reservations per service
-- donations trend
+Each API must work with TiDB using MySQL drivers.
 
--------------------------------------
+---------------------------------------
 
-SECURITY REQUIREMENTS
-
-Include:
-
-password hashing
-JWT authentication
-role-based access control
-input validation
-
--------------------------------------
-
-DELIVERABLES
+OUTPUT REQUIRED
 
 Provide:
 
-1. System architecture
-2. Database schema (SQL)
-3. API endpoints
-4. Backend logic structure
-5. UI component layout
-6. Admin dashboard design
-7. User dashboard design
-8. Example SQL queries
+1. System architecture for Vercel + TiDB
+2. Full SQL schema
+3. Serverless API endpoint design
+4. Folder structure for Vercel project
+5. Frontend page structure
+6. Chat architecture compatible with serverless
+7. Example queries
