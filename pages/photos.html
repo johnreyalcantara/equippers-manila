@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photos — Equippers Manila</title>
+  <link rel="icon" type="image/x-icon" href="/ico.png">
+  <link rel="stylesheet" href="/css/common.css">
+</head>
+
+<body>
+  <nav class="app-nav">
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt="" />
+      <div class="app-nav-links">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/donations.html">Donations</a>
+        <a href="/pages/photos.html" class="active">Photos</a>
+        <a href="/pages/settings.html">Settings</a>
+        <a class="nav-logout" onclick="API.logout()">Logout</a>
+      </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>Photos</h1>
+      <p>Request coverage and view your photo album</p>
+    </div>
+
+    <!-- Request Photo -->
+    <div class="card">
+      <div class="card-title">Request Photo Coverage</div>
+      <div id="requestAlert"></div>
+      <div id="photoRequestForm" style="display:flex; gap:1rem; align-items:end; flex-wrap:wrap;">
+        <div class="form-group" style="margin-bottom:0; flex:1; min-width:200px;">
+          <label>Select Service</label>
+          <select id="serviceSelect">
+            <option value="">Loading...</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="requestPhoto()">Request Photo</button>
+      </div>
+    </div>
+
+    <!-- My Requests -->
+    <div class="card">
+      <div class="card-title">My Requests</div>
+      <div id="myRequests">Loading...</div>
+    </div>
+
+    <!-- Photo Album -->
+    <div class="card">
+      <div class="card-title">My Photo Album</div>
+      <div id="albumGrid"
+        style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; margin-top:0.5rem;">
+        Loading...
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/photos.js"></script>
+</body>
+
+</html>

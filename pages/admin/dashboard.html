@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Equippers Manila</title>
+  <link rel="icon" type="image/x-icon" href="/ico.png">
+  <link rel="stylesheet" href="/css/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <nav class="app-nav">
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt=""> Admin Panel</a>
+    <div class="app-nav-links">
+      <a href="/pages/admin/dashboard.html" class="active">Dashboard</a>
+      <a href="/pages/admin/users.html">Users</a>
+      <a href="/pages/admin/attendance.html">Attendance</a>
+      <a href="/pages/admin/reservations.html">Reservations</a>
+      <a href="/pages/admin/donations.html">Donations</a>
+      <a href="/pages/admin/photos.html">Photos</a>
+      <a class="nav-logout" onclick="API.logout()">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>Admin Dashboard</h1>
+      <p>Overview of church activity</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-value" id="statUsers">0</div><div class="stat-label">Total Users</div></div>
+      <div class="stat-card"><div class="stat-value" id="statAttendees">0</div><div class="stat-label">Total Attendees</div></div>
+      <div class="stat-card"><div class="stat-value" id="statReservations">0</div><div class="stat-label">Total Reservations</div></div>
+      <div class="stat-card"><div class="stat-value" id="statDonations">0</div><div class="stat-label">Total Donations (PHP)</div></div>
+    </div>
+
+    <!-- Create Service -->
+    <div class="card">
+      <div class="card-title">Create New Service</div>
+      <div id="serviceAlert"></div>
+      <form id="createServiceForm" style="display:flex; gap:1rem; flex-wrap:wrap; align-items:end;">
+        <div class="form-group" style="margin-bottom:0;"><label>Date</label><input type="date" name="service_date" required></div>
+        <div class="form-group" style="margin-bottom:0;"><label>Time</label>
+          <select name="service_time"><option value="8:30 AM">8:30 AM</option><option value="10:30 AM">10:30 AM</option></select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;"><label>Max Seats</label><input type="number" name="max_seats" value="200" min="1"></div>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
+    </div>
+
+    <!-- Services List -->
+    <div class="card">
+      <div class="card-title">All Services</div>
+      <div id="servicesList">Loading...</div>
+    </div>
+
+    <!-- Charts -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1.5rem;">
+      <div class="card"><div class="card-title">Attendance per Service</div><canvas id="attChart"></canvas></div>
+      <div class="card"><div class="card-title">Reservations per Service</div><canvas id="resChart"></canvas></div>
+    </div>
+    <div class="card" style="margin-top:1.5rem;"><div class="card-title">Donation Trend (Weekly)</div><canvas id="donChart"></canvas></div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin/dashboard.js"></script>
+</body>
+</html>

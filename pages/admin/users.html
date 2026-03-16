@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users — Admin</title>
+  <link rel="icon" type="image/x-icon" href="/ico.png">
+  <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+  <nav class="app-nav">
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt=""> Admin Panel</a>
+    <div class="app-nav-links">
+      <a href="/pages/admin/dashboard.html">Dashboard</a>
+      <a href="/pages/admin/users.html" class="active">Users</a>
+      <a href="/pages/admin/attendance.html">Attendance</a>
+      <a href="/pages/admin/reservations.html">Reservations</a>
+      <a href="/pages/admin/donations.html">Donations</a>
+      <a href="/pages/admin/photos.html">Photos</a>
+      <a class="nav-logout" onclick="API.logout()">Logout</a>
+    </div>
+  </nav>
+  <div class="page">
+    <div class="page-header"><h1>Users</h1></div>
+    <div id="filterBar" class="filter-bar"></div>
+    <div class="card"><div id="tableContainer">Loading...</div></div>
+  </div>
+  <script src="/js/api.js"></script>
+  <script src="/js/admin/tables.js"></script>
+  <script>
+    initAdminTable({
+      endpoint: '/admin/users',
+      containerId: 'tableContainer',
+      columns: [
+        { key: 'id', label: 'ID' },
+        { key: 'name', label: 'Name' },
+        { key: 'username', label: 'Username' },
+        { key: 'email', label: 'Email' },
+        { key: 'age', label: 'Age' },
+        { key: 'role', label: 'Role', render: r => `<span class="badge ${r.role==='ADMIN'?'badge-info':'badge-success'}">${r.role}</span>` },
+        { key: 'created_at', label: 'Joined', render: r => new Date(r.created_at).toLocaleDateString() }
+      ]
+    });
+  </script>
+</body>
+</html>

@@ -1,239 +1,262 @@
-I want to create a PREMIUM modern landing section for the Equippers Manila website.
+You are a senior full-stack engineer.
 
-This section will appear BEFORE the main page content and act as a “Quick Access Hub” for visitors.
+I have an existing church website for Equippers Manila. I want to ADD a full user system and service attendance management system.
 
-The design should feel like a modern church website similar to Hillsong or Elevation Church.
+Your task is to design and implement the system architecture, database schema, backend logic, and UI components.
 
-Focus on a HIGH-END, visually polished UI with smooth animations.
+The solution should be scalable, secure, and easy to maintain.
 
---------------------------------
+Assume the system will use:
 
-DESIGN STYLE
+Frontend:
+HTML, CSS, JavaScript
 
-The visual style should be:
+Backend:
+Node.js / Express (or similar REST backend)
 
-• modern
-• minimal
-• elegant
-• welcoming
-• inspirational
-• high-end
+Database:
+MySQL
 
-Think of a church website that feels spiritual but modern and tech-forward.
+-------------------------------------
 
-Use lots of whitespace and smooth UI elements.
+CORE FEATURES
 
-Avoid clutter.
+The website should allow users (church attendees) to:
 
---------------------------------
+1. Create an account (Sign Up)
+2. Login
+3. Reserve seats for Sunday service
+4. Mark themselves as attending service
+5. Cancel attendance or reservation
+6. Send donations via GCash
+7. Request photography for the service
+8. View their photos in a personal album
+9. Track their church attendance streak
+10. See a daily Bible verse that refreshes every day
 
-COLOR STYLE
+-------------------------------------
 
-Use a modern church palette:
+AUTHENTICATION SYSTEM
 
-Primary colors
-• white
-• soft black / charcoal
+Create a login system with roles.
 
-Accent colors
-• warm gold
-• soft beige
-• deep navy
+Roles:
+- USER
+- ADMIN
 
-Optional:
-subtle gradient accents.
+Sign Up page:
+Users create accounts using:
+- name
+- age
+- email
+- username
+- password
 
---------------------------------
+Login page:
+Users can login with username and password.
 
-SECTION HEADER
+Admins also login from the same page but have admin privileges.
 
-Title:
-Connect With Equippers Manila
+Admin credentials should exist in the database but are predefined:
 
-Subtitle:
-Explore resources, worship, and ways to get involved in our community.
+username: eqprs_admin
+password: eqprs_mnl_2026!
 
-Center aligned.
+-------------------------------------
 
-Add subtle fade-in animation when the section enters the viewport.
+USER DASHBOARD
 
---------------------------------
+After login, users see their personal dashboard.
 
-LAYOUT
+Dashboard includes:
 
-Create a responsive grid of modern interactive cards.
+Attendance tracker:
+- shows total services attended
+- shows attendance streak (consecutive weeks attended)
 
-Desktop:
-3 columns
+Daily Bible Verse:
+- automatically generated
+- resets every day at 12:00 AM Philippine Time (UTC+8)
 
-Tablet:
-2 columns
+Service Attendance Section:
 
-Mobile:
-1 column
+Buttons:
+[ Reserve Seat ]
+[ Mark As Attending ]
+[ Cancel Attendance ]
 
-Cards should have:
+When user clicks:
 
-• rounded corners
-• soft shadows
-• glass / soft background effect
-• modern icons
-• subtle hover animations
+Reserve Seat
+→ recorded in reservations table
 
-Spacing should feel luxurious and breathable.
+Mark As Attending
+→ recorded in attendance table
 
---------------------------------
+Cancel Attendance
+→ removes record
 
-CARD DESIGN
+-------------------------------------
 
-Each card should contain:
+DONATIONS (GCASH)
 
-• icon
-• title
-• short description
-• click action
+Users can submit donations via GCash.
 
-Cards should have a subtle gradient or glass effect background.
+Donation page should:
 
-Example card hover animation:
+1. Display church GCash QR code
+2. Allow user to input:
+   - donation amount
+   - reference number
+   - optional message
+3. Submit donation record
 
-• slight scale up (1.04)
-• shadow becomes deeper
-• icon slightly animates upward
-• smooth easing animation
+Admin can see all donations.
 
-Animation speed:
-~250ms
+-------------------------------------
 
---------------------------------
+PHOTO REQUEST + ALBUM
 
-MICRO INTERACTIONS
+Users can request photography coverage.
 
-Add subtle animations such as:
+Features:
 
-• cards fade + slide upward when page loads
-• hover lift effect
-• icon bounce or float on hover
-• gentle glow accent
+Request Photo
+→ user submits request for the service
 
-Animations must feel smooth and modern (Apple-like motion).
+Photo Album
+→ user can view all photos assigned to them
 
---------------------------------
+Admin can upload photos and assign them to users.
 
-BUTTON LINKS
+-------------------------------------
 
-Create cards for these resources:
+ACCOUNT SETTINGS
 
-1️⃣ EXPERIENCE
-Title: 30 Day Devotional Plan
-Description: Start a 30-day journey of faith and spiritual growth.
+Users can update:
 
-Link:
-https://drive.google.com/drive/folders/1cZiyZjngTXqNw5-hJ1XYPeyfuvUhzH79
+- name
+- age
+- email
+- username
+- password
 
-Icon suggestion:
-book / bible
+-------------------------------------
 
---------------------------------
+ADMIN PANEL
 
-2️⃣ GET INVOLVED
-Title: Join Equip Teams
-Description: Be part of a team and serve in our church community.
+Admins have a separate dashboard.
 
-Link:
-https://docs.google.com/forms/d/1OCXzr4K8m8Zkz-fZoWlB5__lFJ5B4MavV-mt1GOCcxw/viewform?edit_requested=true
+Admin Dashboard shows:
 
-Icon suggestion:
-users / community
+Total Users
+Total Attendees
+Total Seat Reservations
+Total Donations
 
---------------------------------
+Charts per service.
 
-3️⃣ FACEBOOK
-Title: Facebook
-Description: Stay updated with church news and events.
+-------------------------------------
 
-Link:
-https://www.facebook.com/equippersmanila
+ADMIN DATA TABLES
 
---------------------------------
+Admin can view:
 
-4️⃣ INSTAGRAM
-Title: Instagram
-Description: Follow us for moments, stories, and encouragement.
+1. Users list
+2. Attendance list
+3. Reservations list
+4. Donations list
+5. Photo requests
 
-Link:
-https://www.instagram.com/equippersmanila
+Each table must have GLOBAL FILTER options:
 
---------------------------------
+Filter options:
 
-5️⃣ EQUIPPERS MUSIC
-Title: Equippers Music
-Description: Listen to worship music and latest releases.
+- Today
+- This Week
+- This Month
+- This Year
+- Custom Date Range
 
-Link:
-https://open.spotify.com/artist/1eswTstCzVURi1R8PeAmE1?si=VT3vgyTwSje3bK34Lr1_Mg&nd=1&dlsi=57e704356b6e4265
+-------------------------------------
 
---------------------------------
+DATABASE DESIGN
 
-6️⃣ SUNDAY SETLIST
-Title: Sunday Setlist
-Description: Listen to the songs we worship with every Sunday.
+Create all required MySQL tables.
 
-Link:
-https://open.spotify.com/user/31egdmybfbjuzyy74gn3orzat2ka?si=8b0cfa02db954531&nd=1&dlsi=5f087d6fd0c64cc9
+Required tables include:
 
---------------------------------
+users
+admins
+services
+attendance
+reservations
+donations
+photo_requests
+photos
+daily_verses
 
-ICON LIBRARIES
+Design full schema including:
 
-Use modern icons from:
+- primary keys
+- foreign keys
+- timestamps
+- indexes
 
-• Lucide Icons
-or
-• Heroicons
-or
-• Font Awesome
+-------------------------------------
 
-Icons should be clean line-style icons.
+ATTENDANCE STREAK LOGIC
 
---------------------------------
+A streak increases when a user attends consecutive weekly services.
 
-ANIMATION REQUIREMENTS
+If a week is skipped, streak resets.
 
-Add the following animations:
+-------------------------------------
 
-Page load:
-cards fade-in with stagger animation.
+DAILY BIBLE VERSE SYSTEM
 
-Hover:
-card lifts slightly with shadow increase.
+A daily verse should automatically appear each day.
 
-Icons:
-subtle motion effect.
+Rules:
 
-Scroll:
-section fades into view when scrolled.
+- changes every day
+- resets at 12:00 AM Philippine Time
+- verses can come from database or API
 
---------------------------------
+-------------------------------------
 
-TECHNICAL REQUIREMENTS
+ADMIN ANALYTICS
+
+Admin dashboard should display:
+
+Charts showing:
+
+- attendance per service
+- reservations per service
+- donations trend
+
+-------------------------------------
+
+SECURITY REQUIREMENTS
+
+Include:
+
+password hashing
+JWT authentication
+role-based access control
+input validation
+
+-------------------------------------
+
+DELIVERABLES
 
 Provide:
 
-• clean HTML structure
-• modern CSS
-• responsive layout
-• animation using CSS or lightweight JS
-• accessible markup
-
-Ensure:
-
-• links open in new tab
-• works on mobile devices
-• smooth performance
-• easy to embed into existing website
-
---------------------------------
-
-Goal:
-A modern church landing section that feels premium, inspirational, and interactive.
+1. System architecture
+2. Database schema (SQL)
+3. API endpoints
+4. Backend logic structure
+5. UI component layout
+6. Admin dashboard design
+7. User dashboard design
+8. Example SQL queries

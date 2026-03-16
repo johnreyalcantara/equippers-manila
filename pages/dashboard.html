@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Equippers Manila</title>
+  <link rel="icon" type="image/x-icon" href="/ico.png">
+  <link rel="stylesheet" href="/css/common.css">
+</head>
+
+<body>
+  <nav class="app-nav">
+    <a href="/" class="app-nav-brand"><img src="/header.png" alt="" />
+      <div class="app-nav-links">
+        <a href="/pages/dashboard.html" class="active">Dashboard</a>
+        <a href="/pages/donations.html">Donations</a>
+        <a href="/pages/photos.html">Photos</a>
+        <a href="/pages/settings.html">Settings</a>
+        <a class="nav-logout" onclick="API.logout()">Logout</a>
+      </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>Welcome, <span id="userName">—</span></h1>
+      <p>Your personal dashboard</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalAttended">0</div>
+        <div class="stat-label">Services Attended</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="streak">0</div>
+        <div class="stat-label">Week Streak</div>
+      </div>
+    </div>
+
+    <!-- Daily Bible Verse -->
+    <div class="card" id="verseCard">
+      <div class="card-title">Daily Bible Verse</div>
+      <blockquote id="verseText"
+        style="font-style:italic; font-size:1.05rem; line-height:1.7; color:var(--gray-600); margin-bottom:0.5rem;">
+        Loading...</blockquote>
+      <p id="verseRef" style="font-weight:600; color:var(--navy);"></p>
+    </div>
+
+    <!-- Service Attendance -->
+    <div class="card">
+      <div class="card-title">Upcoming Services</div>
+      <div id="servicesList" style="margin-top:0.5rem;">Loading services...</div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+
+</html>
