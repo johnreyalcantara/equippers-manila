@@ -85,10 +85,15 @@
         <a href="#" class="nav-brand">
           <img src="header.png" alt="Equippers Manila" class="nav-logo">
         </a>
-        <div class="nav-links">
-          <a href="#">About</a>
+        <!-- Hamburger button (mobile only) -->
+        <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" id="navLinks">
           <a href="#connectHub">Connect</a>
+          <a href="#community">Community</a>
           <a href="#services">Services</a>
+          <a href="/pages/announcements.html">Announcements</a>
           <a href="/pages/login.html" class="btn btn-nav">LOGIN</a>
         </div>
       </div>
@@ -223,6 +228,33 @@
       </div>
     </section>
 
+    <!-- ═══════════════════════════════════════════
+         COMMUNITY — Public listing of Teams, Hubs, Groups
+         Fetched from API, visible without login
+         ═══════════════════════════════════════════ -->
+    <section class="community-section" id="community">
+      <div class="container">
+        <div class="community-header">
+          <h2 class="community-title">Our Community</h2>
+          <p class="community-subtitle">Explore our Equip Teams, E-Hubs, and E-Groups — find where you belong.</p>
+        </div>
+
+        <div class="community-tabs">
+          <button class="community-tab active" data-tab="teams">Equip Teams</button>
+          <button class="community-tab" data-tab="hubs">E-Hubs</button>
+          <button class="community-tab" data-tab="groups">E-Groups</button>
+        </div>
+
+        <div id="communityGrid" class="community-grid">
+          <p style="color:var(--gray-400);">Loading...</p>
+        </div>
+
+        <div style="text-align:center; margin-top:2rem;">
+          <a href="/pages/community.html" class="btn btn-outline" style="border-color:var(--gray-600);color:var(--white);">View All & Apply to Join</a>
+        </div>
+      </div>
+    </section>
+
     <!-- Features -->
     <section class="features" id="services">
       <div class="container">
@@ -283,6 +315,25 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // Mobile hamburger menu toggle
+    (function() {
+      var btn = document.getElementById('navHamburger');
+      var links = document.getElementById('navLinks');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function() {
+        links.classList.toggle('open');
+        btn.classList.toggle('active');
+      });
+      // Close menu when a link is clicked
+      links.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() {
+          links.classList.remove('open');
+          btn.classList.remove('active');
+        });
+      });
+    })();
+  </script>
 </body>
 
 </html>

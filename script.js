@@ -345,3 +345,93 @@
     initHubAnimations();
   }
 })();
+
+/* ══════════════════════════════════════════════
+   COMMUNITY SECTION — Public listing of Teams, Hubs, Groups
+
+   Fetches data from the public API endpoints (no auth required).
+   Tab buttons switch between teams, hubs, and groups.
+   Cards show name, description, leader, and member count.
+   ══════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  var communityGrid = document.getElementById('communityGrid');
+  if (!communityGrid) return;
+
+  var currentTab = 'teams';
+  var endpoints = {
+    teams: '/api/equip-teams',
+    hubs: '/api/e-hubs',
+    groups: '/api/e-groups'
+  };
+
+  // Tab click handlers
+  var tabs = document.querySelectorAll('.community-tab');
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      currentTab = tab.getAttribute('data-tab');
+      loadCommunity();
+    });
+  });
+
+  function loadCommunity() {
+    communityGrid.innerHTML = '<p style="color:var(--gray-400)">Loading...</p>';
+
+    fetch(endpoints[currentTab])
+      .then(function (res) { return res.json(); })
+      .then(function (rows) {
+        if (!rows || rows.length === 0) {
+          communityGrid.innerHTML = '<p style="color:var(--gray-400)">Nothing here yet — check back soon!</p>';
+          return;
+        }
+
+        communityGrid.innerHTML = rows.map(function (item) {
+          var meetingInfo = item.meeting_day ? ' · ' + item.meeting_day : '';
+          var locationInfo = item.meeting_location ? '<p style="font-size:0.8rem;color:var(--gray-400);margin-top:0.5rem;">📍 ' + item.meeting_location + '</p>' : '';
+
+          return '<div class="community-card">' +
+            '<h3>' + item.name + '</h3>' +
+            '<div class="card-meta">Led by ' + item.leader_name + ' · ' + item.total_members + ' member' + (item.total_members !== 1 ? 's' : '') + meetingInfo + '</div>' +
+            '<p class="card-desc">' + (item.description || 'No description.') + '</p>' +
+            locationInfo +
+          '</div>';
+        }).join('');
+      })
+      .catch(function () {
+        communityGrid.innerHTML = '<p style="color:var(--gray-400)">Failed to load. Please try again later.</p>';
+      });
+  }
+
+  // Load on page ready
+  function init() {
+    loadCommunity();
+
+    // Scroll-triggered fade-in
+    var section = document.getElementById('community');
+    if (section) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+            observer.unobserve(section);
+          }
+        });
+      }, { threshold: 0.1 });
+      section.style.opacity = '0';
+      section.style.transform = 'translateY(30px)';
+      section.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+      observer.observe(section);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
