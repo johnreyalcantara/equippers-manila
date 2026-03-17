@@ -69,4 +69,33 @@ router.get('/me/is-leader', verifyToken, async (req, res) => {
   }
 });
 
+// GET /api/users/me/memberships — all teams/hubs/groups user is a member of or has pending request
+router.get('/me/memberships', verifyToken, async (req, res) => {
+  try {
+    const uid = req.user.id;
+    const [teamMembers] = await pool.execute('SELECT team_id as id FROM equip_team_members WHERE user_id = ?', [uid]);
+    const [hubMembers] = await pool.execute('SELECT hub_id as id FROM e_hub_members WHERE user_id = ?', [uid]);
+    const [groupMembers] = await pool.execute('SELECT group_id as id FROM e_group_members WHERE user_id = ?', [uid]);
+    const [teamPending] = await pool.execute('SELECT team_id as id FROM equip_team_requests WHERE user_id = ? AND status = "PENDING"', [uid]);
+    const [hubPending] = await pool.execute('SELECT hub_id as id FROM e_hub_requests WHERE user_id = ? AND status = "PENDING"', [uid]);
+    const [groupPending] = await pool.execute('SELECT group_id as id FROM e_group_requests WHERE user_id = ? AND status = "PENDING"', [uid]);
+
+    res.json({
+      memberOf: {
+        teams: teamMembers.map(r => r.id),
+        hubs: hubMembers.map(r => r.id),
+        groups: groupMembers.map(r => r.id)
+      },
+      pendingFor: {
+        teams: teamPending.map(r => r.id),
+        hubs: hubPending.map(r => r.id),
+        groups: groupPending.map(r => r.id)
+      }
+    });
+  } catch (err) {
+    console.error('Memberships error:', err);
+    res.status(500).json({ error: 'Server error: ' + err.message });
+  }
+});
+
 module.exports = router;

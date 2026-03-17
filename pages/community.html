@@ -147,8 +147,19 @@
         const bodyKey = { teams: 'team_id', hubs: 'hub_id', groups: 'group_id' };
         await API.post(endpoints[type], { [bodyKey[type]]: id });
         showAlert('Join request submitted!', 'success');
+        memberships = null; // Clear cache so it re-fetches
         loadData();
       } catch (e) { showAlert(e.message, 'error'); }
+    }
+
+    // Cache memberships so we don't fetch every tab switch
+    let memberships = null;
+
+    async function loadMemberships() {
+      if (!isLoggedIn || memberships) return;
+      try {
+        memberships = await API.get('/users/me/memberships');
+      } catch (e) { memberships = { memberOf: { teams: [], hubs: [], groups: [] }, pendingFor: { teams: [], hubs: [], groups: [] } }; }
     }
 
     async function loadData() {
@@ -158,14 +169,25 @@
         const rows = await fetch(endpoints[currentTab]).then(r => r.json());
         if (rows.length === 0) { el.innerHTML = '<p style="color:var(--gray-400)">None created yet.</p>'; return; }
 
+        // Fetch memberships once for logged-in users
+        await loadMemberships();
+
         const userId = currentUser ? currentUser.id : null;
+        const memberIds = memberships ? memberships.memberOf[currentTab] || [] : [];
+        const pendingIds = memberships ? memberships.pendingFor[currentTab] || [] : [];
 
         el.innerHTML = rows.map(item => {
           const isLeaderOfThis = userId && item.leader_user_id === userId;
+          const isMember = memberIds.includes(item.id);
+          const isPending = pendingIds.includes(item.id);
 
           let actionBtn = '';
           if (isLeaderOfThis) {
             actionBtn = '<span class="badge badge-info" style="font-size:0.8rem;">You lead this</span>';
+          } else if (isMember) {
+            actionBtn = '<span class="badge badge-success" style="font-size:0.8rem;">Member</span>';
+          } else if (isPending) {
+            actionBtn = '<span class="badge badge-warning" style="font-size:0.8rem;">Request Pending</span>';
           } else if (isLoggedIn) {
             actionBtn = '<button class="btn btn-primary btn-sm" onclick="applyJoin(\'' + currentTab + '\',' + item.id + ')">Apply to Join</button>';
           } else {
