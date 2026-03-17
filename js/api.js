@@ -23,6 +23,7 @@ const API = {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('isLeader');
     window.location.href = '/pages/login.html';
   },
 
@@ -86,16 +87,30 @@ const API = {
     return true;
   },
 
-  // Show "My Space" nav link if user leads any team, hub, or group
-  async initLeaderNav() {
+  // Show "My Space" nav link if user leads any team, hub, or group.
+  // Uses localStorage cache for instant display, then refreshes in background.
+  initLeaderNav() {
     if (!this.getToken()) return;
-    try {
-      const data = await this.get('/users/me/is-leader');
+
+    // Step 1: Show instantly from cache
+    var cached = localStorage.getItem('isLeader');
+    if (cached === 'true') {
+      var link = document.getElementById('leaderLink');
+      if (link) link.style.display = '';
+    }
+
+    // Step 2: Refresh in background (updates cache for next page load)
+    this.get('/users/me/is-leader').then(function(data) {
       if (data && data.isLeader) {
+        localStorage.setItem('isLeader', 'true');
         var link = document.getElementById('leaderLink');
         if (link) link.style.display = '';
+      } else {
+        localStorage.removeItem('isLeader');
+        var link = document.getElementById('leaderLink');
+        if (link) link.style.display = 'none';
       }
-    } catch (e) { /* silently fail */ }
+    }).catch(function() {});
   }
 };
 
