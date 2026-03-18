@@ -437,6 +437,123 @@
 })();
 
 /* ══════════════════════════════════════════════
+   DAILY BIBLE VERSE POPUP
+
+   Shows a daily verse popup 3 seconds after the
+   landing page becomes visible. Uses the same verse
+   list and day-of-year logic as the server-side API
+   so the verse matches for logged-in users too.
+   ══════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  var VERSES = [
+    { text: 'For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.', ref: 'Jeremiah 29:11' },
+    { text: 'Trust in the Lord with all your heart and lean not on your own understanding.', ref: 'Proverbs 3:5' },
+    { text: 'I can do all things through Christ who strengthens me.', ref: 'Philippians 4:13' },
+    { text: 'The Lord is my shepherd; I shall not want.', ref: 'Psalm 23:1' },
+    { text: 'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.', ref: 'Joshua 1:9' },
+    { text: 'And we know that in all things God works for the good of those who love him.', ref: 'Romans 8:28' },
+    { text: 'But those who hope in the Lord will renew their strength. They will soar on wings like eagles.', ref: 'Isaiah 40:31' },
+    { text: 'The Lord is close to the brokenhearted and saves those who are crushed in spirit.', ref: 'Psalm 34:18' },
+    { text: 'Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.', ref: 'Philippians 4:6' },
+    { text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.', ref: 'John 3:16' },
+    { text: 'Come to me, all you who are weary and burdened, and I will give you rest.', ref: 'Matthew 11:28' },
+    { text: 'The Lord is my light and my salvation\u2014whom shall I fear?', ref: 'Psalm 27:1' },
+    { text: 'God is our refuge and strength, an ever-present help in trouble.', ref: 'Psalm 46:1' },
+    { text: 'Delight yourself in the Lord, and he will give you the desires of your heart.', ref: 'Psalm 37:4' },
+    { text: 'Have I not commanded you? Be strong and courageous.', ref: 'Joshua 1:9' },
+    { text: 'Cast all your anxiety on him because he cares for you.', ref: '1 Peter 5:7' },
+    { text: 'The name of the Lord is a fortified tower; the righteous run to it and are safe.', ref: 'Proverbs 18:10' },
+    { text: 'Be still, and know that I am God.', ref: 'Psalm 46:10' },
+    { text: 'But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness and self-control.', ref: 'Galatians 5:22-23' },
+    { text: 'Every good and perfect gift is from above, coming down from the Father of the heavenly lights.', ref: 'James 1:17' },
+    { text: 'He has made everything beautiful in its time.', ref: 'Ecclesiastes 3:11' },
+    { text: 'The steadfast love of the Lord never ceases; his mercies never come to an end.', ref: 'Lamentations 3:22' },
+    { text: 'And let us not grow weary of doing good, for in due season we will reap, if we do not give up.', ref: 'Galatians 6:9' },
+    { text: 'This is the day that the Lord has made; let us rejoice and be glad in it.', ref: 'Psalm 118:24' },
+    { text: 'For where two or three gather in my name, there am I with them.', ref: 'Matthew 18:20' },
+    { text: 'The joy of the Lord is your strength.', ref: 'Nehemiah 8:10' },
+    { text: 'In the beginning God created the heavens and the earth.', ref: 'Genesis 1:1' },
+    { text: 'Jesus Christ is the same yesterday and today and forever.', ref: 'Hebrews 13:8' },
+    { text: 'If God is for us, who can be against us?', ref: 'Romans 8:31' },
+    { text: 'Great is our Lord and mighty in power; his understanding has no limit.', ref: 'Psalm 147:5' },
+    { text: 'Your word is a lamp for my feet, a light on my path.', ref: 'Psalm 119:105' },
+    { text: 'The Lord bless you and keep you; the Lord make his face shine on you and be gracious to you.', ref: 'Numbers 6:24-25' },
+    { text: 'I have told you these things, so that in me you may have peace. In this world you will have trouble. But take heart! I have overcome the world.', ref: 'John 16:33' },
+    { text: 'And my God will meet all your needs according to the riches of his glory in Christ Jesus.', ref: 'Philippians 4:19' },
+    { text: 'The Lord himself goes before you and will be with you; he will never leave you nor forsake you.', ref: 'Deuteronomy 31:8' },
+    { text: 'He gives strength to the weary and increases the power of the weak.', ref: 'Isaiah 40:29' },
+    { text: 'Let all that you do be done in love.', ref: '1 Corinthians 16:14' },
+    { text: 'So do not fear, for I am with you; do not be dismayed, for I am your God.', ref: 'Isaiah 41:10' },
+    { text: 'The Lord is good, a refuge in times of trouble. He cares for those who trust in him.', ref: 'Nahum 1:7' },
+    { text: 'But seek first his kingdom and his righteousness, and all these things will be given to you as well.', ref: 'Matthew 6:33' }
+  ];
+
+  function getTodayVerse() {
+    // Philippine Time (UTC+8)
+    var phNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+    var startOfYear = new Date(phNow.getFullYear(), 0, 0);
+    var dayOfYear = Math.floor((phNow - startOfYear) / 86400000);
+    return VERSES[dayOfYear % VERSES.length];
+  }
+
+  function initVersePopup() {
+    var overlay = document.getElementById('versePopup');
+    var closeBtn = document.getElementById('versePopupClose');
+    var textEl = document.getElementById('versePopupText');
+    var refEl = document.getElementById('versePopupRef');
+    if (!overlay || !textEl || !refEl) return;
+
+    var verse = getTodayVerse();
+    textEl.textContent = verse.text;
+    refEl.textContent = '\u2014 ' + verse.ref;
+
+    // Show popup 3 seconds after the landing page is visible
+    var landing = document.getElementById('landing');
+    if (!landing) return;
+
+    function showPopup() {
+      setTimeout(function () {
+        overlay.classList.add('active');
+      }, 3000);
+    }
+
+    // If landing is already visible, start the timer; otherwise observe
+    if (landing.classList.contains('visible')) {
+      showPopup();
+    } else {
+      var mo = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+          if (m.type === 'attributes' && landing.classList.contains('visible')) {
+            mo.disconnect();
+            showPopup();
+          }
+        });
+      });
+      mo.observe(landing, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Close handlers
+    function closePopup() {
+      overlay.classList.remove('active');
+    }
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closePopup();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVersePopup);
+  } else {
+    initVersePopup();
+  }
+})();
+
+/* ══════════════════════════════════════════════
    YOUTUBE SECTION — Tab switching for video embeds
 
    Replace the video IDs below with actual YouTube video IDs.

@@ -819,6 +819,189 @@ body {
 }
 
 /* ══════════════════════════════════════════════
+   DAILY BIBLE VERSE POPUP
+   ══════════════════════════════════════════════ */
+
+.verse-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.verse-popup-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.verse-popup {
+  position: relative;
+  max-width: 480px;
+  width: calc(100% - 2.5rem);
+  padding: 3rem 2.5rem 2.5rem;
+  border-radius: 24px;
+  background: linear-gradient(160deg,
+    rgba(26, 42, 74, 0.95) 0%,
+    rgba(10, 22, 40, 0.97) 100%);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(201, 168, 76, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  text-align: center;
+  overflow: hidden;
+  transform: translateY(40px) scale(0.92);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.verse-popup-overlay.active .verse-popup {
+  transform: translateY(0) scale(1);
+}
+
+/* Decorative glow behind content */
+.verse-popup-glow {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(201, 168, 76, 0.12) 0%,
+    rgba(201, 168, 76, 0.03) 50%,
+    transparent 70%);
+  pointer-events: none;
+}
+
+/* Close button */
+.verse-popup-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  color: var(--gray-400);
+  font-size: 1.75rem;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+  z-index: 2;
+  line-height: 1;
+}
+
+.verse-popup-close:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Book icon */
+.verse-popup-icon {
+  position: relative;
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.25rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.2) 0%, rgba(201, 168, 76, 0.08) 100%);
+  color: var(--gold);
+}
+
+/* Label */
+.verse-popup-label {
+  position: relative;
+  z-index: 1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  margin-bottom: 1.25rem;
+}
+
+/* Verse text */
+.verse-popup-text {
+  position: relative;
+  z-index: 1;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--white);
+  font-style: italic;
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+}
+
+.verse-popup-text::before {
+  content: '\201C';
+  font-size: 3rem;
+  color: var(--gold);
+  opacity: 0.3;
+  position: absolute;
+  top: -1rem;
+  left: -0.25rem;
+  font-style: normal;
+  line-height: 1;
+  font-family: Georgia, serif;
+}
+
+/* Reference */
+.verse-popup-ref {
+  position: relative;
+  z-index: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  letter-spacing: 0.02em;
+}
+
+/* Separator line above reference */
+.verse-popup-ref::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 0 auto 1rem;
+  border-radius: 2px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .verse-popup {
+    padding: 2.5rem 1.75rem 2rem;
+    border-radius: 20px;
+  }
+
+  .verse-popup-text {
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  .verse-popup-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+  }
+}
+
+/* ══════════════════════════════════════════════
    HAMBURGER MENU (hidden on desktop)
    ══════════════════════════════════════════════ */
 
