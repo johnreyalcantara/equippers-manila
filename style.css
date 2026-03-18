@@ -193,22 +193,23 @@ body {
   justify-content: center;
   text-align: center;
   padding: 6rem 2rem 4rem;
-  background: url('bg.jpg') center center / cover no-repeat;
+  background: linear-gradient(170deg, var(--black) 0%, var(--navy) 100%);
   position: relative;
   overflow: hidden;
 }
 
-/* Dark overlay for text readability */
+/* Subtle decorative gradient blob */
 .hero::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    170deg,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(10, 15, 30, 0.55) 50%,
-    rgba(0, 0, 0, 0.7) 100%
-  );
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+      rgba(232, 106, 42, 0.06) 0%,
+      transparent 70%);
+  top: -250px;
+  right: -250px;
   pointer-events: none;
 }
 
