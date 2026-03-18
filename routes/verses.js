@@ -1,6 +1,6 @@
 const express = require('express');
 const pool = require('../config/db');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -39,36 +39,92 @@ const VERSES = [
   { text: 'Your word is a lamp for my feet, a light on my path.', ref: 'Psalm 119:105' },
 ];
 
-// GET /api/verses/today — get daily Bible verse (resets at midnight PHT)
+// Shared helper: get today's verse (checks DB first, falls back to VERSES list)
+async function getTodayVerse() {
+  const phNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+  const today = phNow.toISOString().split('T')[0];
+
+  // Check if verse exists in DB for today
+  const [rows] = await pool.execute('SELECT * FROM daily_verses WHERE verse_date = ?', [today]);
+  if (rows.length > 0) {
+    return { verse: rows[0].verse_text, reference: rows[0].verse_reference };
+  }
+
+  // Fallback: pick verse by day-of-year
+  const startOfYear = new Date(phNow.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((phNow - startOfYear) / 86400000);
+  const verse = VERSES[dayOfYear % VERSES.length];
+
+  // Cache in database
+  await pool.execute(
+    'INSERT IGNORE INTO daily_verses (verse_text, verse_reference, verse_date) VALUES (?, ?, ?)',
+    [verse.text, verse.ref, today]
+  );
+
+  return { verse: verse.text, reference: verse.ref };
+}
+
+// GET /api/verses/today — get daily Bible verse (requires auth, used by dashboard)
 router.get('/today', verifyToken, async (req, res) => {
   try {
-    // Get today's date in Philippine Time (UTC+8)
-    const phNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
-    const today = phNow.toISOString().split('T')[0]; // YYYY-MM-DD
-
-    // Check if verse exists in DB for today
-    const [rows] = await pool.execute('SELECT * FROM daily_verses WHERE verse_date = ?', [today]);
-    if (rows.length > 0) {
-      return res.json({ verse: rows[0].verse_text, reference: rows[0].verse_reference });
-    }
-
-    // Fallback: pick verse by day-of-year
-    const startOfYear = new Date(phNow.getFullYear(), 0, 0);
-    const dayOfYear = Math.floor((phNow - startOfYear) / 86400000);
-    const verse = VERSES[dayOfYear % VERSES.length];
-
-    // Cache in database
-    await pool.execute(
-      'INSERT IGNORE INTO daily_verses (verse_text, verse_reference, verse_date) VALUES (?, ?, ?)',
-      [verse.text, verse.ref, today]
-    );
-
-    res.json({ verse: verse.text, reference: verse.ref });
+    res.json(await getTodayVerse());
   } catch (err) {
     console.error('Verse error:', err);
-    // Return a verse even if DB fails
     const fallback = VERSES[new Date().getDate() % VERSES.length];
     res.json({ verse: fallback.text, reference: fallback.ref });
+  }
+});
+
+// GET /api/verses/public/today — public daily verse (no auth, used by landing page)
+router.get('/public/today', async (req, res) => {
+  try {
+    res.json(await getTodayVerse());
+  } catch (err) {
+    console.error('Public verse error:', err);
+    const fallback = VERSES[new Date().getDate() % VERSES.length];
+    res.json({ verse: fallback.text, reference: fallback.ref });
+  }
+});
+
+// GET /api/verses/all — list all verses in DB (admin)
+router.get('/all', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const [rows] = await pool.execute(
+      'SELECT id, verse_text, verse_reference, verse_date FROM daily_verses ORDER BY verse_date DESC'
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('List verses error:', err);
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// POST /api/verses — add a new verse for a specific date (admin)
+router.post('/', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { verse_text, verse_reference, verse_date } = req.body;
+    if (!verse_text || !verse_reference || !verse_date) {
+      return res.status(400).json({ error: 'Verse text, reference, and date are required.' });
+    }
+    await pool.execute(
+      'INSERT INTO daily_verses (verse_text, verse_reference, verse_date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE verse_text = VALUES(verse_text), verse_reference = VALUES(verse_reference)',
+      [verse_text, verse_reference, verse_date]
+    );
+    res.status(201).json({ message: 'Verse saved.' });
+  } catch (err) {
+    console.error('Add verse error:', err);
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// DELETE /api/verses/:id — delete a verse (admin)
+router.delete('/:id', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    await pool.execute('DELETE FROM daily_verses WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Verse deleted.' });
+  } catch (err) {
+    console.error('Delete verse error:', err);
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
